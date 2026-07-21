@@ -2,11 +2,18 @@
 
 Durable, Markdown-first task continuity for Pi and other coding agents.
 
-## Components
+## User interface
 
-- `oh-my-task-cli`: safe task storage, checkpoints, locking, indexing, and lifecycle commands.
-- Pi extension: startup filtering, context/native resume, Pi session import, and optional auto checkpoints.
-- Agent Skills-compatible `oh-my-task` skill for manual use from Pi, Claude Code, Codex CLI, Kimi CLI, OpenCode, and compatible harnesses.
+Users interact only through the Agent Skills-compatible `oh-my-task` skill in Pi, Claude Code, Codex CLI, Kimi CLI, OpenCode, and compatible harnesses.
+
+```text
+/skill:oh-my-task show my current tasks
+/skill:oh-my-task create a new task
+/skill:oh-my-task checkpoint the current task
+/skill:oh-my-task generate a completion document for the current task
+```
+
+The bundled Pi extension provides startup discovery, context restoration, and optional automatic checkpoints without exposing a separate command. Storage, locking, revision checks, and index updates are internal implementation details.
 
 See [OH-MY-TASK.md](OH-MY-TASK.md) for the complete design.
 
@@ -53,14 +60,14 @@ Data defaults to `~/.oh-my-task/` and can be overridden with `OH_MY_TASK_HOME`. 
 
 ## Configuration
 
-Create defaults with:
+Ask the skill to configure Oh My Task, for example:
 
-```bash
-oh-my-task-cli config-init
+```text
+/skill:oh-my-task set checkpoint mode to manual
 ```
 
-Set `checkpointMode` to `manual` or `auto` in `~/.oh-my-task/config.json`.
+The persisted configuration lives at `~/.oh-my-task/config.json` for users who prefer transparent file inspection.
 
 ## Recovery
 
-Task files are authoritative. The index can be rebuilt with `oh-my-task-cli rebuild-index`. Writes use short-lived locks, revision checks, atomic replacement, and recovery copies. Never force-remove a lock until you have verified no writer is active.
+Ask the skill to validate or recover task state. Task files are authoritative, and the index can be rebuilt internally. Writes use short-lived locks, revision checks, atomic replacement, and recovery copies. The skill must request explicit approval before force-removing a lock.

@@ -231,7 +231,7 @@
 <li><a href="#flow">Flow</a></li>
 </ul>
 </li>
-<li><a href="#17-oh-my-task-cli">17. oh-my-task-cli</a><ul>
+<li><a href="#17-internal-task-runtime">17. Internal Task Runtime</a><ul>
 <li><a href="#cli-output">CLI output</a></li>
 </ul>
 </li>
@@ -280,7 +280,7 @@
 <p>The first release consists of:</p>
 <ol>
 <li>A <strong>Pi extension</strong> for startup/resume UI, repository filtering, Pi session integration, and automatic checkpoint support.</li>
-<li>A portable <strong><code>oh-my-task-cli</code></strong> package that owns storage, validation, locking, indexing, and task mutations.</li>
+<li>A portable internal <strong>task runtime</strong> (implemented by the <code>oh-my-task-cli</code> package) that owns storage, validation, locking, indexing, and task mutations but is never exposed as a user interface.</li>
 <li>An <strong>Agent Skills-compatible <code>oh-my-task</code> skill</strong> for Pi manual mode and other compatible coding agents, including Claude Code, Codex CLI, Kimi CLI, and OpenCode.</li>
 </ol>
 <p>Task files—not chat sessions—are the source of truth for cross-agent continuity.</p>
@@ -651,7 +651,7 @@ Users may add task ideas, plans, or initialization notes here.
 <li>The extension still provides startup, filtering, association, context resume, and <code>/oh-my-task</code> UI.</li>
 <li>Automatic lifecycle checkpoint prompting is disabled.</li>
 <li>The Agent Skill is available as <code>/skill:oh-my-task</code>.</li>
-<li>The skill tells Pi to inspect current task state and call <code>oh-my-task-cli</code> for explicit checkpoint or lifecycle operations.</li>
+<li>The skill translates user requests into internal runtime operations; users never invoke <code>oh-my-task-cli</code> directly.</li>
 <li>Direct Markdown edits are allowed, but the next CLI operation validates schema and revisions before proceeding.</li>
 </ul>
 <hr>
@@ -732,8 +732,8 @@ Users may add task ideas, plans, or initialization notes here.
 </ol>
 <p>Raw transcripts and full tool output are not copied into task files.</p>
 <hr>
-<h2 id="17-oh-my-task-cli">17. <code>oh-my-task-cli</code><a class="headerlink" href="#17-oh-my-task-cli" title="Permanent link">#</a></h2>
-<p>The npm package and shared core are named <strong><code>oh-my-task-cli</code></strong>. The Pi extension imports its core API; skills invoke its executable.</p>
+<h2 id="17-internal-task-runtime">17. Internal Task Runtime<a class="headerlink" href="#17-internal-task-runtime" title="Permanent link">#</a></h2>
+<p>The shared core package is internally named <strong><code>oh-my-task-cli</code></strong>. It is an implementation detail: the Pi extension imports its API and skills invoke its bundled launcher internally. Users interact only with the <code>oh-my-task</code> skill and are never asked to execute these commands, prepare mutation JSON, track revisions, or manage locks.</p>
 <p>Proposed CLI surface:</p>
 <pre><code class="language-text">oh-my-task-cli list [--project NAME] [--status STATUS]
 oh-my-task-cli show &lt;task-id&gt; [--compact]
@@ -765,13 +765,13 @@ oh-my-task-cli unlock &lt;task-id|index&gt; [--force]
 <p>Use Agent Skills-compatible frontmatter:</p>
 <pre><code class="language-yaml">---
 name: oh-my-task
-description: Manage durable coding tasks, implementation plans, checkpoints, blockers, and cross-session context with oh-my-task-cli. Use when starting, resuming, checkpointing, switching, completing, or importing a task.
+description: Manage durable coding tasks, implementation plans, checkpoints, blockers, completion documents, and cross-session context. Use when starting, resuming, checkpointing, switching, completing, documenting, or importing a task.
 ---
 </code></pre>
 <p>The skill must instruct the agent to:</p>
 <ol>
 <li>Locate <code>OH_MY_TASK_HOME</code> or the default data root.</li>
-<li>Use <code>oh-my-task-cli</code> instead of independently rewriting structured task sections whenever possible.</li>
+<li>Invoke the bundled task runtime internally instead of independently rewriting structured task sections; never expose the runtime command to users.</li>
 <li>Identify itself and provide its current session ID when the harness exposes one.</li>
 <li>Use context resume when a session belongs to another agent.</li>
 <li>Read compact context first and load history only when needed.</li>
@@ -923,7 +923,7 @@ description: Manage durable coding tasks, implementation plans, checkpoints, blo
 <li>Add installation helpers/documentation without duplicating skill logic.</li>
 <li>Publish/package <code>oh-my-task-cli</code>, Pi extension, and skill together where practical.</li>
 </ul>
-<p><strong>Exit criteria:</strong> Pi manual mode and at least one non-Pi harness can manage the same task through <code>oh-my-task-cli</code> and context resume.</p>
+<p><strong>Exit criteria:</strong> Pi manual mode and at least one non-Pi harness can manage the same task through the shared skill and context resume, with the runtime hidden as an implementation detail.</p>
 <h3 id="phase-9-hardening-and-release">Phase 9 — Hardening and release<a class="headerlink" href="#phase-9-hardening-and-release" title="Permanent link">#</a></h3>
 <ul>
 <li>Test Windows, macOS, and Linux path/atomic-write behavior.</li>
@@ -1004,7 +1004,7 @@ description: Manage durable coding tasks, implementation plans, checkpoints, blo
 <li>Cross-agent continuation relies on compact task context, not compatible session formats.</li>
 <li>Pi supports native resumption only for compatible Pi sessions.</li>
 <li>The index shows one latest session; task selection shows up to three recent compatible sessions and a context-resume option.</li>
-<li>Manual mode uses the skill and <code>oh-my-task-cli</code>; Pi&rsquo;s extension still owns startup and task-selection UX.</li>
+<li>Users interact only with the shared skill. The Pi extension owns startup/context automation, while the bundled runtime remains an internal implementation detail.</li>
 <li>Auto mode uses Pi lifecycle hooks and a model-callable checkpoint tool.</li>
 <li>Shutdown never initiates a new semantic model call.</li>
 <li>v1 imports Pi session history only; other session adapters are explicit v2 work.</li>

@@ -58,9 +58,9 @@ test("approved imported-plan review prompt limits inspection and requires eviden
   assert.match(prompt, /instead of guessing/);
 });
 
-test("manual mode exposes only the shared skill workflow", () => {
+test("the shared skill is the only user-facing workflow in every mode", () => {
   assert.equal(shouldExposeExtensionCommand("manual"), false);
-  assert.equal(shouldExposeExtensionCommand("auto"), true);
+  assert.equal(shouldExposeExtensionCommand("auto"), false);
   assert.equal(manualSkillCommand("create"), "/skill:oh-my-task create a new task");
   assert.match(manualSkillCommand("import-plan"), /^\/skill:oh-my-task.*@$/);
 });

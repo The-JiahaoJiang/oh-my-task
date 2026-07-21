@@ -12,9 +12,10 @@ Use an equivalent recursive copy command on Windows.
 
 ## Validate and rebuild
 
-```bash
-oh-my-task-cli validate
-oh-my-task-cli rebuild-index
+Ask the skill to validate and rebuild task state:
+
+```text
+/skill:oh-my-task validate task storage and rebuild the index if needed
 ```
 
 Task files are authoritative. Deleting and rebuilding `oh-my-task.md` does not delete task history, but preserve the Manual Inbox before deleting a hand-edited index.
@@ -30,14 +31,14 @@ Locks normally disappear after each mutation. A stale local lock is reclaimed au
 1. Verify no agent or CLI process is writing.
 2. Back up the data directory.
 3. Ask the user for explicit approval.
-4. Run `oh-my-task-cli unlock <task-id|index> --force`.
+4. Ask the skill to force-unlock the affected task or index; the skill performs the internal operation.
 
 ## Schema migrations
 
 Every config and task has `schemaVersion`. A newer unsupported version is rejected rather than guessed. Before a future migration:
 
 1. Back up the complete data directory.
-2. Upgrade `oh-my-task-cli`.
+2. Upgrade the Oh My Task package, including its bundled internal runtime.
 3. Run its documented migration command or compatibility release.
 4. Run `validate` and inspect the index.
 5. Keep the backup until tasks have been opened and checkpointed successfully.

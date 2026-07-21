@@ -7,7 +7,7 @@ Oh My Task is a user-wide task continuity system for coding agents. It keeps dur
 The first release consists of:
 
 1. A **Pi extension** for startup/resume UI, repository filtering, Pi session integration, and automatic checkpoint support.
-2. A portable **`oh-my-task-cli`** package that owns storage, validation, locking, indexing, and task mutations.
+2. A portable internal **task runtime** (implemented by the `oh-my-task-cli` package) that owns storage, validation, locking, indexing, and task mutations but is never exposed as a user interface.
 3. An **Agent Skills-compatible `oh-my-task` skill** for Pi manual mode and other compatible coding agents, including Claude Code, Codex CLI, Kimi CLI, and OpenCode.
 
 Task files—not chat sessions—are the source of truth for cross-agent continuity.
@@ -437,7 +437,7 @@ In manual mode:
 - The extension still provides startup, filtering, association, context resume, and `/oh-my-task` UI.
 - Automatic lifecycle checkpoint prompting is disabled.
 - The Agent Skill is available as `/skill:oh-my-task`.
-- The skill tells Pi to inspect current task state and call `oh-my-task-cli` for explicit checkpoint or lifecycle operations.
+- The skill translates user requests into internal runtime operations; users never invoke `oh-my-task-cli` directly.
 - Direct Markdown edits are allowed, but the next CLI operation validates schema and revisions before proceeding.
 
 ---
@@ -532,9 +532,9 @@ Raw transcripts and full tool output are not copied into task files.
 
 ---
 
-## 17. `oh-my-task-cli`
+## 17. Internal Task Runtime
 
-The npm package and shared core are named **`oh-my-task-cli`**. The Pi extension imports its core API; skills invoke its executable.
+The shared core package is internally named **`oh-my-task-cli`**. It is an implementation detail: the Pi extension imports its API and skills invoke its bundled launcher internally. Users interact only with the `oh-my-task` skill and are never asked to execute these commands, prepare mutation JSON, track revisions, or manage locks.
 
 Proposed CLI surface:
 
@@ -577,14 +577,14 @@ Use Agent Skills-compatible frontmatter:
 ```yaml
 ---
 name: oh-my-task
-description: Manage durable coding tasks, implementation plans, checkpoints, blockers, and cross-session context with oh-my-task-cli. Use when starting, resuming, checkpointing, switching, completing, or importing a task.
+description: Manage durable coding tasks, implementation plans, checkpoints, blockers, completion documents, and cross-session context. Use when starting, resuming, checkpointing, switching, completing, documenting, or importing a task.
 ---
 ```
 
 The skill must instruct the agent to:
 
 1. Locate `OH_MY_TASK_HOME` or the default data root.
-2. Use `oh-my-task-cli` instead of independently rewriting structured task sections whenever possible.
+2. Invoke the bundled task runtime internally instead of independently rewriting structured task sections; never expose the runtime command to users.
 3. Identify itself and provide its current session ID when the harness exposes one.
 4. Use context resume when a session belongs to another agent.
 5. Read compact context first and load history only when needed.
@@ -753,7 +753,7 @@ The published Pi package manifest should expose the extension and skill. Runtime
 - Add installation helpers/documentation without duplicating skill logic.
 - Publish/package `oh-my-task-cli`, Pi extension, and skill together where practical.
 
-**Exit criteria:** Pi manual mode and at least one non-Pi harness can manage the same task through `oh-my-task-cli` and context resume.
+**Exit criteria:** Pi manual mode and at least one non-Pi harness can manage the same task through the shared skill and context resume, with the runtime hidden as an implementation detail.
 
 ### Phase 9 — Hardening and release
 
@@ -840,7 +840,7 @@ The published Pi package manifest should expose the extension and skill. Runtime
 7. Cross-agent continuation relies on compact task context, not compatible session formats.
 8. Pi supports native resumption only for compatible Pi sessions.
 9. The index shows one latest session; task selection shows up to three recent compatible sessions and a context-resume option.
-10. Manual mode uses the skill and `oh-my-task-cli`; Pi's extension still owns startup and task-selection UX.
+10. Users interact only with the shared skill. The Pi extension owns startup/context automation, while the bundled runtime remains an internal implementation detail.
 11. Auto mode uses Pi lifecycle hooks and a model-callable checkpoint tool.
 12. Shutdown never initiates a new semantic model call.
 13. v1 imports Pi session history only; other session adapters are explicit v2 work.

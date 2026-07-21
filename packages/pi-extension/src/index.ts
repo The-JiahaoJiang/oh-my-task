@@ -45,18 +45,13 @@ export default async function ohMyTaskExtension(pi: ExtensionAPI) {
     const choice = await ctx.ui.select("Oh My Task", options);
     if (!choice || choice === "Continue without a task") return;
     if (choice === loadPlanOption) {
-      ctx.ui.setEditorText(runtime.config.checkpointMode === "manual" ? manualSkillCommand("import-plan") : "/oh-my-task new --plan @");
+      ctx.ui.setEditorText(manualSkillCommand("import-plan"));
       ctx.ui.notify("Use @ file completion in the editor, select the plan, then submit the command.", "info");
       return;
     }
     if (choice === "Create a new task") {
-      if (runtime.config.checkpointMode === "manual") {
-        ctx.ui.setEditorText(manualSkillCommand("create"));
-        ctx.ui.notify("Submit the skill command to create the task through the shared cross-agent workflow.", "info");
-        return;
-      }
-      const task = await createTaskInteractively(runtime, ctx, projectName);
-      if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
+      ctx.ui.setEditorText(manualSkillCommand("create"));
+      ctx.ui.notify("Submit the skill command to create the task through the shared cross-agent workflow.", "info");
       return;
     }
     const task = candidates[options.indexOf(choice) - 2];

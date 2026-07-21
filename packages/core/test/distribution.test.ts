@@ -8,7 +8,8 @@ const root = resolve(process.cwd());
 test("shared skill has valid Agent Skills frontmatter and portable CLI guidance", async () => {
   const source = await readFile(resolve(root, "skills", "oh-my-task", "SKILL.md"), "utf8");
   assert.match(source, /^---\nname: oh-my-task\ndescription: .+\ncompatibility: .+\n---/);
-  assert.match(source, /oh-my-task-cli checkpoint/);
+  assert.doesNotMatch(source, /oh-my-task-cli/);
+  assert.match(source, /node <skill-directory>\/cli\.mjs checkpoint/);
   assert.match(source, /<skill-directory>\/cli\.mjs/);
   assert.match(source, /STALE_REVISION/);
   assert.match(source, /claude-code\|codex-cli\|kimi-cli\|opencode/);

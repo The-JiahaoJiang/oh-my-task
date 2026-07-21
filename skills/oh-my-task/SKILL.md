@@ -1,7 +1,7 @@
 ---
 name: oh-my-task
-description: Manage durable coding tasks, implementation plans, checkpoints, blockers, and cross-session context with oh-my-task-cli. Use when starting, resuming, checkpointing, switching, completing, archiving, validating, or importing a task.
-compatibility: Requires Node.js and the oh-my-task-cli executable. Native session resumption is agent-specific; context resume works across agents.
+description: Manage durable coding tasks, implementation plans, checkpoints, blockers, completion documents, and cross-session context. Use when starting, resuming, checkpointing, switching, completing, documenting, archiving, validating, or importing a task.
+compatibility: Requires Node.js; the skill bundles its internal task runtime. Native session resumption is agent-specific; context resume works across agents.
 ---
 
 # Oh My Task
@@ -10,7 +10,7 @@ Use the task Markdown file as the durable source of truth. Sessions are optional
 
 ## Safety Rules
 
-1. Use `oh-my-task-cli` for structured mutations instead of rewriting generated fields by hand. If it is not on `PATH`, run `node <skill-directory>/cli.mjs` with the same arguments.
+1. Use the bundled task runtime for structured mutations instead of rewriting generated fields by hand. Invoke it internally through `node <skill-directory>/cli.mjs`; never ask the user to run it.
 2. Read the task and note its `revision` before mutation.
 3. Pass that revision as `baseRevision`; after `STALE_REVISION`, reload and merge before retrying.
 4. Never force-unlock or force-complete without explicit user approval.
@@ -18,15 +18,21 @@ Use the task Markdown file as the durable source of truth. Sessions are optional
 6. Load compact current context first. Read older checkpoint history only when needed.
 7. If the latest session belongs to another agent, explain that native resume is unavailable and use task-context resume.
 
-## CLI Invocation
+## Internal Runtime — Never Expose to Users
 
-Use `oh-my-task-cli` when it is available on `PATH`. Otherwise resolve this skill's directory and substitute `node <skill-directory>/cli.mjs` in every command below. Do not guess the package's installation root.
+The commands in this skill are implementation instructions for the agent, not user-facing commands.
+
+- Resolve this skill's directory and invoke `node <skill-directory>/cli.mjs <arguments>` through the agent's shell tool.
+- Never ask the user to execute the runtime, prepare checkpoint JSON, track revisions, rebuild the index, or manage locks.
+- Translate user requests into internal operations and present only meaningful choices, previews, approvals, progress, and results.
+- Do not mention the internal package or executable unless diagnosing an installation failure.
+- Do not guess the package installation root.
 
 ## Discover or Resume
 
 ```bash
-oh-my-task-cli list --project "<approved-project-name>"
-oh-my-task-cli show <task-id> --compact
+node <skill-directory>/cli.mjs list --project "<approved-project-name>"
+node <skill-directory>/cli.mjs show <task-id> --compact
 ```
 
 Ask the user to approve the current folder name as the project name or provide another name. State that other user-wide tasks are hidden by the project filter.
@@ -34,7 +40,7 @@ Ask the user to approve the current folder name as the project name or provide a
 To continue from context, read the full selected task only as needed:
 
 ```bash
-oh-my-task-cli show <task-id>
+node <skill-directory>/cli.mjs show <task-id>
 ```
 
 Focus on Objective, Constraints, Plan, Current State, and Next Action.
@@ -51,8 +57,8 @@ When the user asks to create a task, provide the same workflow in every agent:
 Collaboratively clarify the objective and plan, or import an existing plan:
 
 ```bash
-oh-my-task-cli new --title "<title>" --project "<project>" --objective "<objective>"
-oh-my-task-cli new --title "<title>" --project "<project>" --plan ./PLAN.md
+node <skill-directory>/cli.mjs new --title "<title>" --project "<project>" --objective "<objective>"
+node <skill-directory>/cli.mjs new --title "<title>" --project "<project>" --plan ./PLAN.md
 ```
 
 Show normalized imported content to the user before relying on it. Imported plans are copied, not synchronized.
@@ -73,7 +79,7 @@ Do not inspect unrelated files or copy source content, secrets, environment valu
 When the harness exposes a session ID:
 
 ```bash
-oh-my-task-cli associate <task-id> \
+node <skill-directory>/cli.mjs associate <task-id> \
   --base-revision <revision> \
   --agent "<pi|claude-code|codex-cli|kimi-cli|opencode|other>" \
   --session "<session-id>" \
@@ -105,7 +111,7 @@ Review changes and create a small JSON input containing only durable facts:
 Then run:
 
 ```bash
-oh-my-task-cli checkpoint <task-id> --input /path/to/checkpoint.json
+node <skill-directory>/cli.mjs checkpoint <task-id> --input /path/to/checkpoint.json
 ```
 
 Delete temporary checkpoint files if they contain sensitive project details.
@@ -128,10 +134,10 @@ Use the equivalent skill invocation or natural-language request in other agents.
 4. Read the selected task, including its plan, current state, checkpoints, decisions, relevant files, and safe session references.
 
 ```bash
-oh-my-task-cli show <task-id>
+node <skill-directory>/cli.mjs show <task-id>
 ```
 
-If `oh-my-task-cli` is unavailable on `PATH`, use the skill-relative launcher described above.
+Use the skill-relative internal runtime described above.
 
 ### Verify implementation context
 
@@ -184,9 +190,9 @@ Do not mark or force-complete the task merely because a document was generated. 
 ## Complete or Archive
 
 ```bash
-oh-my-task-cli complete <task-id> --base-revision <revision>
-oh-my-task-cli complete <task-id> --base-revision <revision> --force --reason "<user-approved reason>"
-oh-my-task-cli archive <task-id> --base-revision <revision>
+node <skill-directory>/cli.mjs complete <task-id> --base-revision <revision>
+node <skill-directory>/cli.mjs complete <task-id> --base-revision <revision> --force --reason "<user-approved reason>"
+node <skill-directory>/cli.mjs archive <task-id> --base-revision <revision>
 ```
 
 Normal completion requires all plan items to be complete.
@@ -194,10 +200,10 @@ Normal completion requires all plan items to be complete.
 ## Validate and Recover
 
 ```bash
-oh-my-task-cli validate
-oh-my-task-cli rebuild-index
-oh-my-task-cli import-inbox
-oh-my-task-cli import-inbox --apply --project "<project>"
+node <skill-directory>/cli.mjs validate
+node <skill-directory>/cli.mjs rebuild-index
+node <skill-directory>/cli.mjs import-inbox
+node <skill-directory>/cli.mjs import-inbox --apply --project "<project>"
 ```
 
 Preview inbox imports before `--apply`. If generated-region markers are missing, show the reconciliation preview and do not overwrite the index. Use `unlock ... --force` only after user approval and verification that no writer is active.
