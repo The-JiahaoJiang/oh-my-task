@@ -75,6 +75,25 @@ test("stale local lock is reclaimed only when its process is dead", async () => 
   }
 });
 
+test("stale foreign-host lock is never reclaimed automatically", async () => {
+  const root = await temporaryDirectory();
+  try {
+    const lockPath = join(root, "locks", "task.lock");
+    await mkdir(lockPath, { recursive: true });
+    await writeFile(join(lockPath, "owner.json"), JSON.stringify({
+      pid: 2_147_483_000,
+      hostname: "another-host",
+      createdAt: "2000-01-01T00:00:00.000Z",
+    }));
+    await assert.rejects(
+      acquireFileLock(lockPath, { config: { retryMs: 2, timeoutMs: 10, staleAfterMs: 1 } }),
+      (error: unknown) => error instanceof LockBusyError && error.owner?.hostname === "another-host",
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("atomic write replaces complete content", async () => {
   const root = await temporaryDirectory();
   try {

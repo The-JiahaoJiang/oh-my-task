@@ -13,6 +13,14 @@ test("shared skill has valid Agent Skills frontmatter and portable CLI guidance"
   assert.match(source, /claude-code\|codex-cli\|kimi-cli\|opencode/);
 });
 
+test("recovery and migration guidance documents destructive-operation safeguards", async () => {
+  const source = await readFile(resolve(root, "docs", "RECOVERY.md"), "utf8");
+  assert.match(source, /Back up/);
+  assert.match(source, /explicit approval/);
+  assert.match(source, /schemaVersion/);
+  assert.match(source, /Name collisions/);
+});
+
 test("root Pi package manifest references existing extension and skill", async () => {
   const manifest = JSON.parse(await readFile(resolve(root, "package.json"), "utf8")) as {
     keywords: string[];

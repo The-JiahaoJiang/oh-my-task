@@ -148,6 +148,16 @@ test("two writers using one revision cannot overwrite each other", async () => {
   }
 });
 
+test("task IDs cannot escape the task directory", async () => {
+  const { store, cleanup } = await fixture();
+  try {
+    await assert.rejects(store.read("../../outside"), ValidationError);
+    await assert.rejects(store.create({ id: "../outside", title: "Escape", projectName: "app" }), ValidationError);
+  } finally {
+    await cleanup();
+  }
+});
+
 test("unknown plan item fails without changing revision", async () => {
   const { store, cleanup } = await fixture();
   try {
