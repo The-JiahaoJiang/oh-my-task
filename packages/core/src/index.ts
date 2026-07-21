@@ -1,5 +1,6 @@
 export * from "./atomic.js";
 export * from "./config.js";
+export * from "./config-store.js";
 export * from "./errors.js";
 export * from "./id.js";
 export * from "./index-store.js";
