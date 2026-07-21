@@ -171,94 +171,43 @@
       <p class="sidebar-label">Design sections</p>
       <nav class="toc" aria-label="Table of contents"><div class="toc">
 <ul>
-<li><a href="#1-purpose">1. Purpose</a></li>
-<li><a href="#2-goals">2. Goals</a></li>
-<li><a href="#3-non-goals-for-v1">3. Non-goals for v1</a></li>
-<li><a href="#4-terminology">4. Terminology</a></li>
-<li><a href="#5-storage-layout">5. Storage Layout</a><ul>
-<li><a href="#responsibilities">Responsibilities</a></li>
+<li><a href="#1-design-principles">1. Design Principles</a></li>
+<li><a href="#2-system-architecture">2. System Architecture</a><ul>
+<li><a href="#component-responsibilities">Component responsibilities</a></li>
 </ul>
 </li>
-<li><a href="#6-project-name-and-filtering">6. Project Name and Filtering</a><ul>
-<li><a href="#filtering-message">Filtering message</a></li>
+<li><a href="#3-data-layout">3. Data Layout</a><ul>
+<li><a href="#task-document">Task document</a></li>
+<li><a href="#task-and-plan-statuses">Task and plan statuses</a></li>
 </ul>
 </li>
-<li><a href="#7-task-data-model">7. Task Data Model</a><ul>
-<li><a href="#task-statuses">Task statuses</a></li>
-<li><a href="#plan-item-markers">Plan-item markers</a></li>
-<li><a href="#association-invariants">Association invariants</a></li>
+<li><a href="#4-main-workflows">4. Main Workflows</a><ul>
+<li><a href="#start-or-resume">Start or resume</a></li>
+<li><a href="#create-through-the-skill">Create through the skill</a></li>
+<li><a href="#import-a-plan-with-file">Import a plan with @file</a></li>
+<li><a href="#checkpoint">Checkpoint</a></li>
+<li><a href="#automatic-mode-in-pi">Automatic mode in Pi</a></li>
+<li><a href="#completion-document">Completion document</a></li>
 </ul>
 </li>
-<li><a href="#8-checkpoint-semantics">8. Checkpoint Semantics</a><ul>
-<li><a href="#required-checkpoint-content">Required checkpoint content</a></li>
-<li><a href="#projection-versus-history">Projection versus history</a></li>
-<li><a href="#conflict-behavior">Conflict behavior</a></li>
-<li><a href="#completion">Completion</a></li>
+<li><a href="#5-concurrency-and-recovery">5. Concurrency and Recovery</a><ul>
+<li><a href="#mutation-protocol">Mutation protocol</a></li>
+<li><a href="#lock-recovery">Lock recovery</a></li>
+<li><a href="#index-recovery">Index recovery</a></li>
 </ul>
 </li>
-<li><a href="#9-concurrency-and-file-safety">9. Concurrency and File Safety</a><ul>
-<li><a href="#lock-policy">Lock policy</a></li>
-<li><a href="#deadlock-avoidance">Deadlock avoidance</a></li>
+<li><a href="#6-configuration">6. Configuration</a></li>
+<li><a href="#7-implementation-details-and-code-map">7. Implementation Details and Code Map</a><ul>
+<li><a href="#internal-core-runtime">Internal core runtime</a></li>
+<li><a href="#pi-background-extension">Pi background extension</a></li>
+<li><a href="#shared-skill">Shared skill</a></li>
+<li><a href="#distribution-documentation-and-automation">Distribution, documentation, and automation</a></li>
+<li><a href="#test-suites">Test suites</a></li>
 </ul>
 </li>
-<li><a href="#10-global-index">10. Global Index</a><ul>
-<li><a href="#rules">Rules</a></li>
-</ul>
-</li>
-<li><a href="#11-configuration">11. Configuration</a></li>
-<li><a href="#12-pi-extension">12. Pi Extension</a><ul>
-<li><a href="#always-enabled-responsibilities">Always-enabled responsibilities</a></li>
-<li><a href="#startup-behavior">Startup behavior</a></li>
-<li><a href="#resume-behavior">Resume behavior</a></li>
-<li><a href="#compact-context-injection">Compact context injection</a></li>
-<li><a href="#oh-my-task-command">/oh-my-task command</a></li>
-<li><a href="#session-association-persistence">Session association persistence</a></li>
-</ul>
-</li>
-<li><a href="#13-pi-manual-mode">13. Pi Manual Mode</a></li>
-<li><a href="#14-pi-auto-mode">14. Pi Auto Mode</a><ul>
-<li><a href="#model-callable-tool">Model-callable tool</a></li>
-<li><a href="#lifecycle-hooks">Lifecycle hooks</a></li>
-<li><a href="#meaningful-work-detection">Meaningful-work detection</a></li>
-</ul>
-</li>
-<li><a href="#15-new-task-flow">15. New Task Flow</a><ul>
-<li><a href="#existing-plan-import">Existing plan import</a></li>
-</ul>
-</li>
-<li><a href="#16-session-based-initialization-pi-only-in-v1">16. Session-Based Initialization (Pi Only in v1)</a><ul>
-<li><a href="#filters">Filters</a></li>
-<li><a href="#flow">Flow</a></li>
-</ul>
-</li>
-<li><a href="#17-internal-task-runtime">17. Internal Task Runtime</a><ul>
-<li><a href="#cli-output">CLI output</a></li>
-</ul>
-</li>
-<li><a href="#18-shared-agent-skill">18. Shared Agent Skill</a></li>
-<li><a href="#19-privacy-and-security">19. Privacy and Security</a></li>
-<li><a href="#20-suggested-repository-structure">20. Suggested Repository Structure</a></li>
-<li><a href="#21-implementation-plan">21. Implementation Plan</a><ul>
-<li><a href="#phase-1-foundation-and-schemas">Phase 1 — Foundation and schemas</a></li>
-<li><a href="#phase-2-safe-task-store">Phase 2 — Safe task store</a></li>
-<li><a href="#phase-3-index-and-manual-inbox">Phase 3 — Index and manual inbox</a></li>
-<li><a href="#phase-4-cli">Phase 4 — CLI</a></li>
-<li><a href="#phase-5-pi-extension-manual-lifecycle">Phase 5 — Pi extension: manual lifecycle</a></li>
-<li><a href="#phase-6-pi-session-initialization">Phase 6 — Pi session initialization</a></li>
-<li><a href="#phase-7-pi-automatic-mode">Phase 7 — Pi automatic mode</a></li>
-<li><a href="#phase-8-shared-skill-and-distribution">Phase 8 — Shared skill and distribution</a></li>
-<li><a href="#phase-9-hardening-and-release">Phase 9 — Hardening and release</a></li>
-</ul>
-</li>
-<li><a href="#22-test-strategy">22. Test Strategy</a><ul>
-<li><a href="#unit-tests">Unit tests</a></li>
-<li><a href="#concurrency-tests">Concurrency tests</a></li>
-<li><a href="#pi-integration-tests">Pi integration tests</a></li>
-<li><a href="#acceptance-scenarios">Acceptance scenarios</a></li>
-</ul>
-</li>
-<li><a href="#23-v2-roadmap-todo">23. v2 Roadmap / TODO</a></li>
-<li><a href="#24-final-agreed-product-rules">24. Final Agreed Product Rules</a></li>
+<li><a href="#8-security-and-privacy-boundaries">8. Security and Privacy Boundaries</a></li>
+<li><a href="#9-build-and-validation">9. Build and Validation</a></li>
+<li><a href="#10-extension-points">10. Extension Points</a></li>
 </ul>
 </div>
 </nav>
@@ -274,164 +223,132 @@
           <span class="chip">Pi extension</span><span class="chip">oh-my-task-cli</span><span class="chip">Agent Skills</span><span class="chip">Markdown-first</span><span class="chip">Concurrent-safe</span>
         </div>
       </section>
-      <article id="design"><h1 id="oh-my-task-final-design-and-implementation-plan">Oh My Task — Final Design and Implementation Plan<a class="headerlink" href="#oh-my-task-final-design-and-implementation-plan" title="Permanent link">#</a></h1>
-<h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link">#</a></h2>
-<p>Oh My Task is a user-wide task continuity system for coding agents. It keeps durable, agent-independent implementation plans and progress summaries outside individual chat sessions, while retaining session references for optional native resumption.</p>
-<p>The first release consists of:</p>
+      <article id="design"><h1 id="oh-my-task-design-architecture-and-implementation">Oh My Task — Design, Architecture, and Implementation<a class="headerlink" href="#oh-my-task-design-architecture-and-implementation" title="Permanent link">#</a></h1>
+<p>Oh My Task provides durable, Markdown-first task continuity for coding agents. Plans, verified progress, decisions, blockers, relevant files, and next actions live outside chat transcripts so work can continue across sessions and agents.</p>
+<ul>
+<li><strong>Project site:</strong> https://the-jiahaojiang.github.io/oh-my-task/</li>
+<li><strong>Source:</strong> https://github.com/The-JiahaoJiang/oh-my-task</li>
+<li><strong>User interface:</strong> the shared <code>oh-my-task</code> skill</li>
+<li><strong>Pi automation:</strong> a background extension with no competing user command</li>
+<li><strong>Storage:</strong> user-wide Markdown under <code>~/.oh-my-task/</code></li>
+</ul>
+<hr>
+<h2 id="1-design-principles">1. Design Principles<a class="headerlink" href="#1-design-principles" title="Permanent link">#</a></h2>
 <ol>
-<li>A <strong>Pi extension</strong> for startup/resume UI, repository filtering, Pi session integration, and automatic checkpoint support.</li>
-<li>A portable internal <strong>task runtime</strong> (implemented by the <code>oh-my-task-cli</code> package) that owns storage, validation, locking, indexing, and task mutations but is never exposed as a user interface.</li>
-<li>An <strong>Agent Skills-compatible <code>oh-my-task</code> skill</strong> for Pi manual mode and other compatible coding agents, including Claude Code, Codex CLI, Kimi CLI, and OpenCode.</li>
+<li><strong>The skill is the only user-facing task interface.</strong> Users express intent through <code>/skill:oh-my-task</code>; internal runtime commands, revisions, locks, and mutation JSON remain hidden.</li>
+<li><strong>Task files are authoritative.</strong> Sessions are useful references but are not required to resume work.</li>
+<li><strong>Context is agent-independent.</strong> Pi can natively resume Pi sessions; transitions between agents use compact task context.</li>
+<li><strong>Writes are safe and recoverable.</strong> Short-lived locks, revision checks, atomic replacement, and recovery copies prevent silent overwrite.</li>
+<li><strong>Summaries are curated.</strong> Task state excludes full transcripts, raw tool output, credentials, environment values, and secret-file content.</li>
+<li><strong>Automation requires evidence.</strong> Plan progress is updated from verified implementation state, not guesses.</li>
+<li><strong>Markdown remains transparent.</strong> Users can inspect task files and retain notes outside generated index regions.</li>
 </ol>
-<p>Task files—not chat sessions—are the source of truth for cross-agent continuity.</p>
 <hr>
-<h2 id="2-goals">2. Goals<a class="headerlink" href="#2-goals" title="Permanent link">#</a></h2>
-<ul>
-<li>Maintain a user-wide index of coding tasks.</li>
-<li>Keep one dedicated Markdown file per task.</li>
-<li>Resume work either through a compatible Pi session or by loading compact task context into a new/current session.</li>
-<li>Filter task discovery to the current repository or selected working directory.</li>
-<li>Track implementation-plan progress, edited files, decisions, unresolved issues, and blockers.</li>
-<li>Support manual and automatic checkpoint modes in Pi.</li>
-<li>Permit transparent human editing without requiring an opaque database.</li>
-<li>Safely serialize concurrent writes from multiple agent sessions.</li>
-<li>Import task context from selected Pi sessions in v1.</li>
-<li>Keep the durable format agent-independent.</li>
-</ul>
-<h2 id="3-non-goals-for-v1">3. Non-goals for v1<a class="headerlink" href="#3-non-goals-for-v1" title="Permanent link">#</a></h2>
-<ul>
-<li>Parsing or natively resuming Claude Code, Codex CLI, Kimi CLI, or OpenCode session histories.</li>
-<li>Treating session transcripts as the durable source of truth.</li>
-<li>Synchronizing a task with an imported plan file after the initial import.</li>
-<li>Copying full transcripts or raw tool output into task files.</li>
-<li>Encrypting task data at rest.</li>
-<li>Multi-repository tasks.</li>
-<li>Fully transactional updates across both a task file and the derived index. The index is recoverable and eventually consistent.</li>
-</ul>
+<h2 id="2-system-architecture">2. System Architecture<a class="headerlink" href="#2-system-architecture" title="Permanent link">#</a></h2>
+<pre><code class="language-text">┌─────────────────────────────────────────────────────────────┐
+│ User                                                        │
+│ /skill:oh-my-task &lt;natural-language task operation&gt;         │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Shared Agent Skill                                          │
+│ - consistent workflow across Pi and other agents            │
+│ - previews, approvals, safety policy, completion docs       │
+│ - invokes the bundled runtime internally                    │
+└───────────────────┬──────────────────────────┬──────────────┘
+                    │                          │
+                    ▼                          ▼
+┌───────────────────────────────┐   ┌─────────────────────────┐
+│ Internal Task Runtime         │   │ Pi Background Extension │
+│ - schemas and Markdown        │   │ - startup task chooser  │
+│ - task lifecycle/checkpoints  │   │ - workspace linking     │
+│ - locks and atomic writes     │   │ - context restoration   │
+│ - generated global index      │   │ - optional auto mode    │
+└───────────────┬───────────────┘   └────────────┬────────────┘
+                │                                │
+                └────────────────┬───────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│ ~/.oh-my-task/                                              │
+│ - tasks/*.md                 authoritative task documents   │
+│ - oh-my-task.md              rebuildable global index       │
+│ - project-links.json         workspace/project associations │
+│ - config.json                user configuration             │
+│ - locks/ and recovery/       mutation safety                │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="component-responsibilities">Component responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shared skill</td>
+<td>Converts user intent into safe task operations and provides the same manual workflow across agents.</td>
+</tr>
+<tr>
+<td>Pi extension</td>
+<td>Adds startup discovery, task-context restoration, workspace linking, session metadata, and guarded automatic checkpoints.</td>
+</tr>
+<tr>
+<td>Internal runtime</td>
+<td>Owns parsing, validation, task lifecycle, checkpoint history, locking, indexing, and persistence.</td>
+</tr>
+<tr>
+<td>Task document</td>
+<td>Stores objective, constraints, plan, current state, decisions, files, sessions, and append-only checkpoints.</td>
+</tr>
+<tr>
+<td>Global index</td>
+<td>Presents compact task projections while preserving the manual inbox. It can be rebuilt from task files.</td>
+</tr>
+</tbody>
+</table>
 <hr>
-<h2 id="4-terminology">4. Terminology<a class="headerlink" href="#4-terminology" title="Permanent link">#</a></h2>
-<ul>
-<li><strong>Task:</strong> A durable unit of work with an objective, implementation plan, current state, and checkpoint history.</li>
-<li><strong>Checkpoint:</strong> An accepted progress update associated with one or more plan items.</li>
-<li><strong>Current-state projection:</strong> The compact task summary derived from the plan and accepted checkpoints.</li>
-<li><strong>Session reference:</strong> Agent name, session ID, working directory, and timestamps retained for traceability or native resumption.</li>
-<li><strong>Context resume:</strong> Continue in the current/new session by injecting compact task context rather than loading an old transcript.</li>
-<li><strong>Project name:</strong> A user-approved name used to associate and filter tasks. The current folder name is offered as the default.</li>
-</ul>
-<hr>
-<h2 id="5-storage-layout">5. Storage Layout<a class="headerlink" href="#5-storage-layout" title="Permanent link">#</a></h2>
-<p>Default root:</p>
+<h2 id="3-data-layout">3. Data Layout<a class="headerlink" href="#3-data-layout" title="Permanent link">#</a></h2>
 <pre><code class="language-text">~/.oh-my-task/
-├── oh-my-task.md
 ├── config.json
+├── project-links.json
+├── oh-my-task.md
 ├── tasks/
 │   └── &lt;task-id&gt;.md
 ├── locks/
 └── recovery/
 </code></pre>
-<p>The environment variable <code>OH_MY_TASK_HOME</code> overrides the root.</p>
-<h3 id="responsibilities">Responsibilities<a class="headerlink" href="#responsibilities" title="Permanent link">#</a></h3>
-<ul>
-<li><code>oh-my-task.md</code>: Human-readable global index and manual initialization inbox.</li>
-<li><code>config.json</code>: User-wide behavior and safety configuration.</li>
-<li><code>tasks/*.md</code>: Authoritative task records.</li>
-<li><code>locks/</code>: Short-lived per-task and index lock files/directories.</li>
-<li><code>recovery/</code>: Recovery copies produced when a write cannot be safely completed.</li>
-</ul>
-<p>All durable text files use UTF-8 and normalized LF line endings when written by the CLI.</p>
-<hr>
-<h2 id="6-project-name-and-filtering">6. Project Name and Filtering<a class="headerlink" href="#6-project-name-and-filtering" title="Permanent link">#</a></h2>
-<p>Use the current working directory&rsquo;s folder name as the only automatic project-name suggestion. Do not inspect Git metadata, remotes, parent repositories, or neighboring folders.</p>
-<p>When task management starts:</p>
-<ol>
-<li>Read the basename of Pi&rsquo;s <code>ctx.cwd</code>.</li>
-<li>Offer that folder name to the user for approval.</li>
-<li>Let the user enter a different project name instead.</li>
-<li>Use the approved name to associate and filter tasks.</li>
-</ol>
-<h3 id="filtering-message">Filtering message<a class="headerlink" href="#filtering-message" title="Permanent link">#</a></h3>
-<p>Whenever tasks are filtered, Pi must show a fixed, explicit hint such as:</p>
-<blockquote>
-<p>Showing incomplete tasks associated with <code>&lt;project&gt;</code>. Other user-wide tasks are hidden by the current-project filter.</p>
-</blockquote>
-<p>Incomplete means <code>planned</code>, <code>in-progress</code>, or <code>blocked</code>.</p>
-<hr>
-<h2 id="7-task-data-model">7. Task Data Model<a class="headerlink" href="#7-task-data-model" title="Permanent link">#</a></h2>
-<p>Each task file combines structured YAML frontmatter with readable Markdown.</p>
+<p><code>OH_MY_TASK_HOME</code> overrides the default root.</p>
+<h3 id="task-document">Task document<a class="headerlink" href="#task-document" title="Permanent link">#</a></h3>
+<p>Each task is Markdown with validated YAML frontmatter:</p>
 <pre><code class="language-markdown">---
 schemaVersion: 1
-id: omt-20260327-auth-refactor
-title: Refactor authentication
-status: in-progress
-revision: 7
-createdAt: 2026-03-25T09:00:00Z
-updatedAt: 2026-03-27T10:30:00Z
+id: &quot;omt-20260721-build-deploy-a1b2c3&quot;
+title: &quot;Build deployment v2&quot;
+status: &quot;in-progress&quot;
+revision: 8
+createdAt: &quot;2026-07-20T09:00:00Z&quot;
+updatedAt: &quot;2026-07-21T10:30:00Z&quot;
 project:
-  name: my-app
-activePlanItem: replace-token-validation
-progressSummary: New validator implemented; integration tests remain.
-nextAction: Update middleware and run authentication tests.
-latestSession:
-  agent: pi
-  sessionId: 00000000-0000-0000-0000-000000000000
-  cwd: /work/my-app
-  updatedAt: 2026-03-27T10:30:00Z
-sourcePlan:
-  path: /work/my-app/PLAN.md
-  importedAt: 2026-03-25T09:05:00Z
+  name: &quot;CopilotEGP&quot;
+activePlanItem: &quot;verify-rollback&quot;
+progressSummary: &quot;Deployment path implemented.&quot;
+nextAction: &quot;Verify rollback behavior.&quot;
 ---
-
-# Refactor authentication
-
-## Objective
-
-...
-
-## Constraints
-
-...
-
-## Plan
-
-- [x] **inspect-legacy-paths** — Identify legacy authentication paths
-- [&gt;] **replace-token-validation** — Replace token validation
-- [ ] **update-middleware** — Update middleware
-- [ ] **integration-tests** — Run integration tests
-
-## Current State
-
-### Progress
-...
-
-### Next Action
-...
-
-### Decisions
-- ...
-
-### Blockers and Unresolved Issues
-- ...
-
-### Relevant Files
-- `src/auth/validator.ts` — edited; new validator
-
-## Sessions
-
-- Pi — `&lt;session-id&gt;` — `&lt;cwd&gt;` — last used `&lt;timestamp&gt;`
-
-## Checkpoint History
-
-### Checkpoint 7 — 2026-03-27T10:30:00Z
-
-- **Plan item:** `replace-token-validation`
-- **Status:** in progress
-- **Progress:** ...
-- **Files:** ...
-- **Decisions:** ...
-- **Blockers:** ...
-- **Agent/session:** Pi / `&lt;session-id&gt;`
 </code></pre>
-<h3 id="task-statuses">Task statuses<a class="headerlink" href="#task-statuses" title="Permanent link">#</a></h3>
+<p>The Markdown body contains:</p>
+<ul>
+<li>Objective and constraints</li>
+<li>Plan items with stable IDs and statuses</li>
+<li>Current progress and next action</li>
+<li>Decisions, blockers, and relevant files</li>
+<li>Agent/session references</li>
+<li>Append-only checkpoint history</li>
+</ul>
+<h3 id="task-and-plan-statuses">Task and plan statuses<a class="headerlink" href="#task-and-plan-statuses" title="Permanent link">#</a></h3>
+<p>Task statuses:</p>
 <ul>
 <li><code>planned</code></li>
 <li><code>in-progress</code></li>
@@ -439,117 +356,77 @@ sourcePlan:
 <li><code>completed</code></li>
 <li><code>archived</code></li>
 </ul>
-<h3 id="plan-item-markers">Plan-item markers<a class="headerlink" href="#plan-item-markers" title="Permanent link">#</a></h3>
+<p>Plan markers:</p>
 <ul>
 <li><code>[ ]</code> not started</li>
 <li><code>[&gt;]</code> in progress</li>
 <li><code>[x]</code> completed</li>
 <li><code>[!]</code> blocked</li>
 </ul>
-<h3 id="association-invariants">Association invariants<a class="headerlink" href="#association-invariants" title="Permanent link">#</a></h3>
-<ul>
-<li>One session is associated with at most one task.</li>
-<li>One task may have many sessions and agents.</li>
-<li>Only one task is active in a given session.</li>
-<li>Switching a session to another task is explicit.</li>
-<li>Session references are optional for task continuity; the task file is sufficient.</li>
-</ul>
 <hr>
-<h2 id="8-checkpoint-semantics">8. Checkpoint Semantics<a class="headerlink" href="#8-checkpoint-semantics" title="Permanent link">#</a></h2>
-<p>A checkpoint updates both a compact projection and append-only history.</p>
-<h3 id="required-checkpoint-content">Required checkpoint content<a class="headerlink" href="#required-checkpoint-content" title="Permanent link">#</a></h3>
-<ul>
-<li>Plan item(s) affected.</li>
-<li>Completed plan items.</li>
-<li>Progress for active plan items.</li>
-<li>Edited/relevant files and their role.</li>
-<li>Final decisions made since the prior checkpoint.</li>
-<li>Current status.</li>
-<li>Unresolved issues and blockers for ongoing items.</li>
-<li>Next actionable step.</li>
-<li>Agent name and session ID when available.</li>
-</ul>
-<h3 id="projection-versus-history">Projection versus history<a class="headerlink" href="#projection-versus-history" title="Permanent link">#</a></h3>
-<ul>
-<li>Plan statuses and <code>Current State</code> are updated in place.</li>
-<li>Every accepted checkpoint is appended under <code>Checkpoint History</code>.</li>
-<li>The frontmatter projection is updated for fast listing and index generation.</li>
-<li>The global index never contains full checkpoint history.</li>
-</ul>
-<h3 id="conflict-behavior">Conflict behavior<a class="headerlink" href="#conflict-behavior" title="Permanent link">#</a></h3>
-<p>Every proposed mutation includes the revision observed by the caller. After acquiring the lock, the CLI re-reads the task:</p>
-<ul>
-<li>If the revision still matches, apply the mutation.</li>
-<li>If it changed, return a structured stale-revision conflict.</li>
-<li>The agent/user must reload and merge against the latest task.</li>
-<li>Never silently overwrite incompatible plan/status changes.</li>
-<li>If a failure occurs during replacement, preserve recovery material in <code>recovery/</code>.</li>
-</ul>
-<h3 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">#</a></h3>
-<p>A task may normally be completed only when no plan item remains incomplete or blocked. A user may force completion with an explicit reason, which is recorded as a final checkpoint.</p>
-<hr>
-<h2 id="9-concurrency-and-file-safety">9. Concurrency and File Safety<a class="headerlink" href="#9-concurrency-and-file-safety" title="Permanent link">#</a></h2>
-<p>v1 supports multiple sessions reading and updating the same task. Mutations are serialized with short-lived locks; tasks are not locked for the lifetime of a session.</p>
-<h3 id="lock-policy">Lock policy<a class="headerlink" href="#lock-policy" title="Permanent link">#</a></h3>
-<ul>
-<li>Use one atomic per-task lock for task mutations.</li>
-<li>Use a separate index lock for index writes/rebuilds.</li>
-<li>Lock metadata includes PID, hostname, agent, session ID, and creation time.</li>
-<li>Retry for a configurable bounded interval when a lock is busy.</li>
-<li>Reclaim a local stale lock only after verifying its PID is dead.</li>
-<li>Otherwise require explicit user confirmation or an explicit force-unlock operation.</li>
-<li>Use temp-file write, flush/close, and atomic replacement.</li>
-<li>Increment <code>revision</code> on every accepted task mutation.</li>
-</ul>
-<h3 id="deadlock-avoidance">Deadlock avoidance<a class="headerlink" href="#deadlock-avoidance" title="Permanent link">#</a></h3>
-<p>Do not hold a task lock while waiting for the index lock. The operation order is:</p>
+<h2 id="4-main-workflows">4. Main Workflows<a class="headerlink" href="#4-main-workflows" title="Permanent link">#</a></h2>
+<h3 id="start-or-resume">Start or resume<a class="headerlink" href="#start-or-resume" title="Permanent link">#</a></h3>
 <ol>
-<li>Lock, validate, and atomically update the task.</li>
-<li>Release the task lock.</li>
-<li>Snapshot task projections.</li>
-<li>Lock and regenerate the index region.</li>
-<li>Release the index lock.</li>
+<li>The Pi extension resolves the current workspace.</li>
+<li>A persisted workspace/project link is reused without prompting.</li>
+<li>Relevant incomplete tasks are shown with explicit <code>Task</code>, <code>Status</code>, and <code>Progress</code> labels.</li>
+<li>Selecting a task associates the current session and injects compact context.</li>
+<li>Cross-agent continuation uses the task document rather than an incompatible transcript.</li>
 </ol>
-<p>A crash between steps 2 and 4 may leave a stale index, but never loses the authoritative task update. Startup and subsequent CLI operations detect and repair this condition.</p>
+<h3 id="create-through-the-skill">Create through the skill<a class="headerlink" href="#create-through-the-skill" title="Permanent link">#</a></h3>
+<ol>
+<li>The user invokes <code>/skill:oh-my-task create a new task</code>.</li>
+<li>The skill clarifies title, objective, constraints, and plan.</li>
+<li>It asks for project approval only when no workspace link exists.</li>
+<li>It previews the task before invoking the internal runtime.</li>
+<li>The runtime creates the task and rebuilds the index.</li>
+</ol>
+<h3 id="import-a-plan-with-file">Import a plan with <code>@file</code><a class="headerlink" href="#import-a-plan-with-file" title="Permanent link">#</a></h3>
+<ol>
+<li>Pi’s startup menu pre-fills <code>/skill:oh-my-task import a task plan from @</code>.</li>
+<li>Pi’s normal <code>@</code> completion links the plan file.</li>
+<li>The skill normalizes and previews the plan.</li>
+<li>After import approval, it separately asks whether to inspect related project files and update progress.</li>
+<li>If approved, only directly related files are read; verified evidence updates plan statuses and checkpoint history.</li>
+</ol>
+<h3 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">#</a></h3>
+<ol>
+<li>The skill reads the active task and its revision.</li>
+<li>It summarizes completed/active plan items, relevant files, decisions, blockers, and next action.</li>
+<li>The runtime acquires a task lock and rechecks the revision.</li>
+<li>It updates the current-state projection and appends checkpoint history.</li>
+<li>It atomically replaces the task file, then rebuilds the global index.</li>
+</ol>
+<h3 id="automatic-mode-in-pi">Automatic mode in Pi<a class="headerlink" href="#automatic-mode-in-pi" title="Permanent link">#</a></h3>
+<ol>
+<li>The extension tracks successful write/edit operations.</li>
+<li><code>agent_settled</code> requests one guarded checkpoint after meaningful work.</li>
+<li>A model-callable internal tool records the checkpoint.</li>
+<li>Reentrancy state prevents checkpoint loops.</li>
+<li><code>session_shutdown</code> never initiates a model request.</li>
+</ol>
+<h3 id="completion-document">Completion document<a class="headerlink" href="#completion-document" title="Permanent link">#</a></h3>
+<p>The skill can generate <code>docs/oh-my-task/&lt;task-id&gt;-completion.md</code> in the current repository. It asks permission before reading additional related files and produces a reviewed reference containing introduction, final architecture, design decisions, implementation, usage, validation, limitations, and provenance.</p>
 <hr>
-<h2 id="10-global-index">10. Global Index<a class="headerlink" href="#10-global-index" title="Permanent link">#</a></h2>
-<p><code>oh-my-task.md</code> is transparent and human-editable. It has a manual inbox and a generated region:</p>
-<pre><code class="language-markdown"># Oh My Task
-
-## Manual Inbox
-
-Users may add task ideas, plans, or initialization notes here.
-
-&lt;!-- OH-MY-TASK:GENERATED:START --&gt;
-## Active Tasks
-
-### Refactor authentication
-
-- Status: In progress
-- Project: my-app
-- Progress: New validator implemented; integration tests remain.
-- Current item: Replace token validation
-- Next: Update middleware and run authentication tests
-- Updated: 2026-03-27 10:30
-- Latest session: pi/00000000-0000-0000-0000-000000000000
-- Task file: `tasks/omt-20260327-auth-refactor.md`
-
-&lt;!-- OH-MY-TASK:GENERATED:END --&gt;
+<h2 id="5-concurrency-and-recovery">5. Concurrency and Recovery<a class="headerlink" href="#5-concurrency-and-recovery" title="Permanent link">#</a></h2>
+<h3 id="mutation-protocol">Mutation protocol<a class="headerlink" href="#mutation-protocol" title="Permanent link">#</a></h3>
+<pre><code class="language-text">acquire task lock
+  → read authoritative task
+  → verify base revision
+  → apply mutation
+  → increment revision
+  → write and fsync temporary file
+  → atomically replace task
+  → release task lock
+  → rebuild index under separate index lock
 </code></pre>
-<h3 id="rules">Rules<a class="headerlink" href="#rules" title="Permanent link">#</a></h3>
-<ul>
-<li>The CLI preserves all content outside the generated markers.</li>
-<li>It regenerates only the marked region from authoritative task projections.</li>
-<li>The index displays only the latest session reference for each task.</li>
-<li>Selecting a task shows up to three recent compatible session references.</li>
-<li>Manual-inbox entries can be validated and converted into dedicated tasks after user preview and approval.</li>
-<li>If generated markers are absent, validate the entire document and show a reconciliation preview before modifying it.</li>
-<li>Existing-task edits made only in the index are never silently applied to task files.</li>
-<li>Store enough revision metadata in the generated region (possibly as HTML comments) to detect a stale index without cluttering the visible document.</li>
-</ul>
+<p>A task lock is held only for one mutation. Concurrent readers are allowed. A stale writer receives a revision conflict and must reload and merge.</p>
+<h3 id="lock-recovery">Lock recovery<a class="headerlink" href="#lock-recovery" title="Permanent link">#</a></h3>
+<p>Lock metadata records PID, hostname, agent, session, and creation time. A stale local lock is reclaimed only when its process is confirmed dead. Foreign-host or ambiguous locks require explicit user approval before force removal.</p>
+<h3 id="index-recovery">Index recovery<a class="headerlink" href="#index-recovery" title="Permanent link">#</a></h3>
+<p>Task files remain authoritative. If a process stops after updating a task but before updating the index, later startup or validation detects the revision mismatch and rebuilds the generated index region. Manual content outside generated markers is preserved.</p>
 <hr>
-<h2 id="11-configuration">11. Configuration<a class="headerlink" href="#11-configuration" title="Permanent link">#</a></h2>
-<p>Proposed <code>config.json</code>:</p>
+<h2 id="6-configuration">6. Configuration<a class="headerlink" href="#6-configuration" title="Permanent link">#</a></h2>
 <pre><code class="language-json">{
   &quot;schemaVersion&quot;: 1,
   &quot;checkpointMode&quot;: &quot;manual&quot;,
@@ -569,448 +446,343 @@ Users may add task ideas, plans, or initialization notes here.
   ]
 }
 </code></pre>
-<p><code>checkpointMode</code> is <code>manual</code> or <code>auto</code>. Startup prompting is independently configurable.</p>
-<p>Configuration validation must reject unknown schema versions and report invalid values with actionable messages.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>checkpointMode</code></td>
+<td><code>manual</code> uses the skill on demand; <code>auto</code> additionally enables Pi’s internal checkpoint tool and lifecycle prompt.</td>
+</tr>
+<tr>
+<td><code>startupPrompt</code></td>
+<td>Enables project-filtered discovery in fresh interactive Pi sessions.</td>
+</tr>
+<tr>
+<td><code>defaultSessionSearchDays</code></td>
+<td>Default age range for approved Pi session discovery.</td>
+</tr>
+<tr>
+<td><code>lock</code></td>
+<td>Retry, timeout, and stale thresholds for file mutations.</td>
+</tr>
+<tr>
+<td><code>sessionDisplayLimit</code></td>
+<td>Number of recent compatible session references shown for a selected task.</td>
+</tr>
+<tr>
+<td><code>ignoredPaths</code></td>
+<td>Sensitive path patterns excluded from summaries and progress reviews.</td>
+</tr>
+</tbody>
+</table>
+<p>The shared skill is the only explicit user interface in both checkpoint modes.</p>
 <hr>
-<h2 id="12-pi-extension">12. Pi Extension<a class="headerlink" href="#12-pi-extension" title="Permanent link">#</a></h2>
-<h3 id="always-enabled-responsibilities">Always-enabled responsibilities<a class="headerlink" href="#always-enabled-responsibilities" title="Permanent link">#</a></h3>
-<p>The extension remains active in both manual and auto modes to provide:</p>
+<h2 id="7-implementation-details-and-code-map">7. Implementation Details and Code Map<a class="headerlink" href="#7-implementation-details-and-code-map" title="Permanent link">#</a></h2>
+<p>All links point to the implementation on the <code>main</code> branch.</p>
+<h3 id="internal-core-runtime">Internal core runtime<a class="headerlink" href="#internal-core-runtime" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Public internal exports</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/index.ts"><code>packages/core/src/index.ts</code></a></td>
+</tr>
+<tr>
+<td>Shared domain types</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/types.ts"><code>types.ts</code></a></td>
+</tr>
+<tr>
+<td>Validation errors and lifecycle errors</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/errors.ts"><code>errors.ts</code></a></td>
+</tr>
+<tr>
+<td>Task/config schema validation</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/schema.ts"><code>schema.ts</code></a></td>
+</tr>
+<tr>
+<td>Schema migration registry</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/migrations.ts"><code>migrations.ts</code></a></td>
+</tr>
+<tr>
+<td>Conservative frontmatter parser</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/yaml.ts"><code>yaml.ts</code></a></td>
+</tr>
+<tr>
+<td>Task Markdown parsing/serialization</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/markdown.ts"><code>markdown.ts</code></a></td>
+</tr>
+<tr>
+<td>Plan/current-state/checkpoint sections</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/task-body.ts"><code>task-body.ts</code></a></td>
+</tr>
+<tr>
+<td>Authoritative task lifecycle store</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/task-store.ts"><code>task-store.ts</code></a></td>
+</tr>
+<tr>
+<td>Generated global index/manual inbox</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/index-store.ts"><code>index-store.ts</code></a></td>
+</tr>
+<tr>
+<td>Atomic file replacement/recovery</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/atomic.ts"><code>atomic.ts</code></a></td>
+</tr>
+<tr>
+<td>Short-lived lock implementation</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/lock.ts"><code>lock.ts</code></a></td>
+</tr>
+<tr>
+<td>Storage path resolution</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/paths.ts"><code>paths.ts</code></a></td>
+</tr>
+<tr>
+<td>Configuration defaults</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/config.ts"><code>config.ts</code></a></td>
+</tr>
+<tr>
+<td>Configuration persistence</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/config-store.ts"><code>config-store.ts</code></a></td>
+</tr>
+<tr>
+<td>Workspace-name suggestion/validation</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/project.ts"><code>project.ts</code></a></td>
+</tr>
+<tr>
+<td>Workspace/project mapping store</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/project-links.ts"><code>project-links.ts</code></a></td>
+</tr>
+<tr>
+<td>Task ID and slug generation</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/id.ts"><code>id.ts</code></a></td>
+</tr>
+<tr>
+<td>Plan-file normalization/import</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/plan-import.ts"><code>plan-import.ts</code></a></td>
+</tr>
+<tr>
+<td>Internal runtime command adapter</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/src/cli.ts"><code>cli.ts</code></a></td>
+</tr>
+</tbody>
+</table>
+<p>The internal command adapter is called only by the skill or extension. It is not installed as a user-facing executable.</p>
+<h3 id="pi-background-extension">Pi background extension<a class="headerlink" href="#pi-background-extension" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extension entry and lifecycle hooks</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/src/index.ts"><code>packages/pi-extension/src/index.ts</code></a></td>
+</tr>
+<tr>
+<td>Runtime/store construction</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/src/runtime.ts"><code>runtime.ts</code></a></td>
+</tr>
+<tr>
+<td>Reload-safe workspace links</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/src/project-links.ts"><code>project-links.ts</code></a></td>
+</tr>
+<tr>
+<td>Compact task context/session metadata</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/src/context.ts"><code>context.ts</code></a></td>
+</tr>
+<tr>
+<td>Startup labels and skill-prefill helpers</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/src/ui.ts"><code>ui.ts</code></a></td>
+</tr>
+<tr>
+<td>Auto-checkpoint reentrancy controller</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/src/auto-checkpoint.ts"><code>auto-checkpoint.ts</code></a></td>
+</tr>
+<tr>
+<td>Pi session filtering/import proposals</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/src/session-import.ts"><code>session-import.ts</code></a></td>
+</tr>
+</tbody>
+</table>
+<p>The extension deliberately contains no <code>registerCommand("oh-my-task", ...)</code> call. It contributes background behavior and an internal model tool only in automatic mode.</p>
+<h3 id="shared-skill">Shared skill<a class="headerlink" href="#shared-skill" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cross-agent workflow and policy</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/skills/oh-my-task/SKILL.md"><code>skills/oh-my-task/SKILL.md</code></a></td>
+</tr>
+<tr>
+<td>Skill-relative runtime launcher</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/skills/oh-my-task/cli.mjs"><code>skills/oh-my-task/cli.mjs</code></a></td>
+</tr>
+<tr>
+<td>Completion/design document template</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/skills/oh-my-task/assets/completion-doc-template.md"><code>skills/oh-my-task/assets/completion-doc-template.md</code></a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="distribution-documentation-and-automation">Distribution, documentation, and automation<a class="headerlink" href="#distribution-documentation-and-automation" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Package resource manifest</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/package.json"><code>package.json</code></a></td>
+</tr>
+<tr>
+<td>Cross-agent skill installer</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/scripts/install-skills.mjs"><code>scripts/install-skills.mjs</code></a></td>
+</tr>
+<tr>
+<td>Architecture HTML generator</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/scripts/generate_design_html.py"><code>scripts/generate_design_html.py</code></a></td>
+</tr>
+<tr>
+<td>Project-site generator</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/scripts/generate_project_site.py"><code>scripts/generate_project_site.py</code></a></td>
+</tr>
+<tr>
+<td>Project-site validator</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/scripts/check_project_site.py"><code>scripts/check_project_site.py</code></a></td>
+</tr>
+<tr>
+<td>Node 24 dependency-free test runner</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/scripts/test-with-node-types.mjs"><code>scripts/test-with-node-types.mjs</code></a></td>
+</tr>
+<tr>
+<td>Standard TypeScript test runner</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/scripts/run-ts-tests.mjs"><code>scripts/run-ts-tests.mjs</code></a></td>
+</tr>
+<tr>
+<td>Cross-platform validation workflow</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/.github/workflows/ci.yml"><code>.github/workflows/ci.yml</code></a></td>
+</tr>
+<tr>
+<td>GitHub Pages workflow</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/.github/workflows/pages.yml"><code>.github/workflows/pages.yml</code></a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="test-suites">Test suites<a class="headerlink" href="#test-suites" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Schema, paths, IDs, and defaults</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/foundation.test.ts"><code>foundation.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Markdown/frontmatter round trips</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/markdown.test.ts"><code>markdown.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Locks, concurrency, atomic writes</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/io-safety.test.ts"><code>io-safety.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Task lifecycle/checkpoints</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/task-store.test.ts"><code>task-store.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Index/manual inbox/recovery</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/index-store.test.ts"><code>index-store.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Plan import</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/plan-import.test.ts"><code>plan-import.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Workspace/project links</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/project-links.test.ts"><code>project-links.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Internal runtime adapter</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/cli.test.ts"><code>cli.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Package/skill/site contracts</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/core/test/distribution.test.ts"><code>distribution.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Pi startup/context behavior</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/test/manual-lifecycle.test.ts"><code>manual-lifecycle.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Pi automatic checkpoints</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/test/auto-checkpoint.test.ts"><code>auto-checkpoint.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Pi session import/privacy</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/test/session-import.test.ts"><code>session-import.test.ts</code></a></td>
+</tr>
+<tr>
+<td>Pi workspace-link inference</td>
+<td><a href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/packages/pi-extension/test/project-linking.test.ts"><code>project-linking.test.ts</code></a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-security-and-privacy-boundaries">8. Security and Privacy Boundaries<a class="headerlink" href="#8-security-and-privacy-boundaries" title="Permanent link">#</a></h2>
 <ul>
-<li>Current-folder project-name suggestion and user approval.</li>
-<li>Project-filtered startup task discovery.</li>
-<li>New-task/resume chooser.</li>
-<li>Session-to-task association.</li>
-<li>Compact context injection.</li>
-<li><code>/oh-my-task</code> UI and lifecycle commands.</li>
-<li>Pi session search/import initialization.</li>
-<li>Index consistency checks on startup.</li>
+<li>Extensions execute with the user’s permissions; install only from trusted sources.</li>
+<li>Task files are plaintext and are not a secret store.</li>
+<li>Session imports preview metadata before reading approved histories.</li>
+<li>Progress review reads only files directly related to the approved plan.</li>
+<li>Completion documents distinguish verified implementation facts from assumptions.</li>
+<li>Paths are validated to prevent task IDs from escaping the data directory.</li>
+<li>Unknown schema versions fail closed with upgrade guidance.</li>
+<li>Generated index content never executes instructions found in user-edited Markdown.</li>
 </ul>
-<h3 id="startup-behavior">Startup behavior<a class="headerlink" href="#startup-behavior" title="Permanent link">#</a></h3>
-<p>On <code>session_start</code>:</p>
-<ol>
-<li>Skip dialogs in print and JSON modes.</li>
-<li>Suggest the current folder name and obtain the user&rsquo;s approved project name.</li>
-<li>Check for an existing task association in the Pi session.</li>
-<li>If associated, validate the task and load its compact context automatically.</li>
-<li>Otherwise, when startup prompting is enabled, list relevant incomplete tasks and show the fixed filtering hint.</li>
-<li>Offer:
-   - Create a new task.
-   - Select an incomplete task.
-   - Continue without a task.</li>
-<li>After task selection, show:
-   - Up to three recent resumable Pi sessions.
-   - <strong>Continue in current session from task context.</strong></li>
-<li>Add the current session reference only after association succeeds.</li>
-</ol>
-<p>A resumed Pi session already mapped to a task does not show the chooser again.</p>
-<h3 id="resume-behavior">Resume behavior<a class="headerlink" href="#resume-behavior" title="Permanent link">#</a></h3>
-<ul>
-<li>Selecting a compatible Pi session uses Pi&rsquo;s native session-switch API.</li>
-<li>Context resume stays in the current session and injects the compact task projection.</li>
-<li>If the latest task activity belongs to another agent, show an agent-switch notice and offer context resume only.</li>
-<li>Other-agent session IDs are informational and are never passed to Pi&rsquo;s native resume mechanism.</li>
-</ul>
-<h3 id="compact-context-injection">Compact context injection<a class="headerlink" href="#compact-context-injection" title="Permanent link">#</a></h3>
-<p>Inject only:</p>
-<ul>
-<li>Objective and constraints.</li>
-<li>Current plan and statuses.</li>
-<li>Latest checkpoint relevant to the active item.</li>
-<li>Current decisions and blockers.</li>
-<li>Next action.</li>
-<li>Relevant-file list.</li>
-</ul>
-<p>Older checkpoint history is loaded only on demand.</p>
-<h3 id="oh-my-task-command"><code>/oh-my-task</code> command<a class="headerlink" href="#oh-my-task-command" title="Permanent link">#</a></h3>
-<p>Default invocation displays the same project-filtered information as startup. Proposed subcommands:</p>
-<pre><code class="language-text">/oh-my-task
-/oh-my-task list
-/oh-my-task new
-/oh-my-task resume
-/oh-my-task switch
-/oh-my-task checkpoint
-/oh-my-task complete
-/oh-my-task archive
-/oh-my-task init
-/oh-my-task validate
-/oh-my-task rebuild-index
-/oh-my-task unlock
+<hr>
+<h2 id="9-build-and-validation">9. Build and Validation<a class="headerlink" href="#9-build-and-validation" title="Permanent link">#</a></h2>
+<pre><code class="language-bash">npm run test:local
+npm run validate
+npm run site:build
+npm run site:check
+python scripts/generate_design_html.py
 </code></pre>
-<p>Interactive operations use Pi&rsquo;s UI APIs. Non-interactive invocations produce concise text or actionable errors without attempting dialogs.</p>
-<h3 id="session-association-persistence">Session association persistence<a class="headerlink" href="#session-association-persistence" title="Permanent link">#</a></h3>
-<p>Record the association in both places:</p>
-<ul>
-<li>Task file session references: durable cross-agent metadata.</li>
-<li>A Pi custom session entry: fast, branch-aware detection when resuming a Pi session.</li>
-</ul>
-<p>The external task file remains authoritative if the two disagree; reconciliation requires confirmation when ambiguity could change the active task.</p>
+<p>Validation covers Linux, macOS, and Windows on supported Node versions. The Node 24 fallback suite runs without fetching runtime dependencies. GitHub Pages is generated and deployed through the Pages workflow.</p>
 <hr>
-<h2 id="13-pi-manual-mode">13. Pi Manual Mode<a class="headerlink" href="#13-pi-manual-mode" title="Permanent link">#</a></h2>
-<p>In manual mode:</p>
+<h2 id="10-extension-points">10. Extension Points<a class="headerlink" href="#10-extension-points" title="Permanent link">#</a></h2>
+<p>The architecture intentionally leaves room for:</p>
 <ul>
-<li>The extension still provides startup, filtering, association, context resume, and <code>/oh-my-task</code> UI.</li>
-<li>Automatic lifecycle checkpoint prompting is disabled.</li>
-<li>The Agent Skill is available as <code>/skill:oh-my-task</code>.</li>
-<li>The skill translates user requests into internal runtime operations; users never invoke <code>oh-my-task-cli</code> directly.</li>
-<li>Direct Markdown edits are allowed, but the next CLI operation validates schema and revisions before proceeding.</li>
+<li>Session-history adapters for Claude Code, Codex CLI, Kimi CLI, and OpenCode</li>
+<li>Native resume adapters where a stable API exists</li>
+<li>Multi-repository tasks</li>
+<li>Semantic three-way plan merges</li>
+<li>Optional encrypted fields</li>
+<li>Repository-local export/import for teams</li>
+<li>Long-history checkpoint compaction</li>
 </ul>
-<hr>
-<h2 id="14-pi-auto-mode">14. Pi Auto Mode<a class="headerlink" href="#14-pi-auto-mode" title="Permanent link">#</a></h2>
-<h3 id="model-callable-tool">Model-callable tool<a class="headerlink" href="#model-callable-tool" title="Permanent link">#</a></h3>
-<p>The extension registers an auto-mode checkpoint tool, for example <code>oh_my_task_checkpoint</code>, with structured fields for:</p>
-<ul>
-<li>Base revision.</li>
-<li>Affected plan-item IDs and status changes.</li>
-<li>Progress summary.</li>
-<li>Edited/relevant files.</li>
-<li>Decisions.</li>
-<li>Blockers/unresolved issues.</li>
-<li>Next action.</li>
-<li>Proposed task status.</li>
-</ul>
-<p>The tool delegates all mutation logic to the same core used by <code>oh-my-task-cli</code>.</p>
-<h3 id="lifecycle-hooks">Lifecycle hooks<a class="headerlink" href="#lifecycle-hooks" title="Permanent link">#</a></h3>
-<ul>
-<li>Track file mutation signals during the agent run.</li>
-<li>At <code>agent_settled</code>, if an active task has meaningful uncheckpointed work, queue one guarded follow-up asking the agent to call the checkpoint tool.</li>
-<li>A reentrancy guard prevents checkpoint loops.</li>
-<li>Clear dirty state only after a successful checkpoint.</li>
-<li>At <code>session_shutdown</code>, flush already-collected non-semantic state and release resources; do not initiate another model call.</li>
-</ul>
-<h3 id="meaningful-work-detection">Meaningful-work detection<a class="headerlink" href="#meaningful-work-detection" title="Permanent link">#</a></h3>
-<p>Trigger when at least one is true:</p>
-<ul>
-<li>Built-in or extension file-write/edit tools changed files.</li>
-<li>Git status/diff indicates repository changes since the last checkpoint.</li>
-<li>Task/plan state changed.</li>
-<li>The agent explicitly identified a durable decision or blocker.</li>
-</ul>
-<p>Pure discussion does not force an automatic checkpoint unless it produced a durable decision/blocker. Non-Git changes made indirectly through arbitrary shell commands may not be mechanically detectable; the agent can still call the tool explicitly.</p>
-<hr>
-<h2 id="15-new-task-flow">15. New Task Flow<a class="headerlink" href="#15-new-task-flow" title="Permanent link">#</a></h2>
-<ol>
-<li>User selects <strong>New task</strong>.</li>
-<li>Ask for title and optional initial objective.</li>
-<li>Ask the user to choose:
-   - Develop the implementation plan collaboratively with the agent.
-   - Import an existing plan file.</li>
-<li>Create a minimal <code>planned</code> task and associate the current session.</li>
-<li>For collaborative planning, inject a prompt directing the agent to clarify scope and develop the plan with the user.</li>
-<li>Save the approved plan as the first checkpoint.</li>
-</ol>
-<h3 id="existing-plan-import">Existing plan import<a class="headerlink" href="#existing-plan-import" title="Permanent link">#</a></h3>
-<ul>
-<li>Read the plan once.</li>
-<li>Normalize it into the task schema.</li>
-<li>Show the proposed objective, constraints, and plan for approval.</li>
-<li>Copy approved content into the dedicated task file.</li>
-<li>Retain the original path and import timestamp as provenance.</li>
-<li>Do not maintain a live link or synchronize later changes.</li>
-</ul>
-<hr>
-<h2 id="16-session-based-initialization-pi-only-in-v1">16. Session-Based Initialization (Pi Only in v1)<a class="headerlink" href="#16-session-based-initialization-pi-only-in-v1" title="Permanent link">#</a></h2>
-<p>When <code>/oh-my-task init</code> finds no task data, ask whether to search Pi session history.</p>
-<h3 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h3>
-<p>Users may narrow candidates with any combination of:</p>
-<ul>
-<li>Keywords.</li>
-<li>Date/day range.</li>
-<li>Repository or directory path.</li>
-</ul>
-<p>Use Pi&rsquo;s structured session APIs (<code>SessionManager.list</code>/<code>listAll</code>) rather than filesystem-name assumptions where possible.</p>
-<h3 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">#</a></h3>
-<ol>
-<li>Search metadata first; do not immediately read full transcripts.</li>
-<li>Display candidate session name/ID, date, working directory, and a brief safe preview.</li>
-<li>Let the user select sessions.</li>
-<li>Let the user group selected sessions into one task or choose one task per session.</li>
-<li>Analyze only approved sessions.</li>
-<li>Propose task titles, objectives, plans, decisions, progress, blockers, next steps, and session references.</li>
-<li>Show a preview.</li>
-<li>Create task/index files only after explicit approval.</li>
-<li>Read the resulting index and display initialized task information.</li>
-</ol>
-<p>Raw transcripts and full tool output are not copied into task files.</p>
-<hr>
-<h2 id="17-internal-task-runtime">17. Internal Task Runtime<a class="headerlink" href="#17-internal-task-runtime" title="Permanent link">#</a></h2>
-<p>The shared core package is internally named <strong><code>oh-my-task-cli</code></strong>. It is an implementation detail: the Pi extension imports its API and skills invoke its bundled launcher internally. Users interact only with the <code>oh-my-task</code> skill and are never asked to execute these commands, prepare mutation JSON, track revisions, or manage locks.</p>
-<p>Proposed CLI surface:</p>
-<pre><code class="language-text">oh-my-task-cli list [--project NAME] [--status STATUS]
-oh-my-task-cli show &lt;task-id&gt; [--compact]
-oh-my-task-cli new [--title TITLE] [--objective TEXT] [--plan FILE]
-oh-my-task-cli associate &lt;task-id&gt; --agent NAME --session ID --cwd PATH
-oh-my-task-cli checkpoint &lt;task-id&gt; --input FILE|--json JSON
-                                    --base-revision N
-oh-my-task-cli switch &lt;task-id&gt; --agent NAME --session ID
-oh-my-task-cli complete &lt;task-id&gt; [--force --reason TEXT]
-oh-my-task-cli archive &lt;task-id&gt;
-oh-my-task-cli init --agent pi [--keywords TEXT] [--days N] [--repo PATH]
-oh-my-task-cli validate [&lt;task-id&gt;]
-oh-my-task-cli rebuild-index
-oh-my-task-cli import-inbox
-oh-my-task-cli unlock &lt;task-id|index&gt; [--force]
-</code></pre>
-<h3 id="cli-output">CLI output<a class="headerlink" href="#cli-output" title="Permanent link">#</a></h3>
-<ul>
-<li>Human-readable output by default.</li>
-<li><code>--json</code> for extension/skill integration.</li>
-<li>Stable error codes for lock busy, stale revision, validation failure, task not found, project mismatch, and unsupported session agent.</li>
-<li>Mutating commands return the new revision and updated compact projection.</li>
-</ul>
-<hr>
-<h2 id="18-shared-agent-skill">18. Shared Agent Skill<a class="headerlink" href="#18-shared-agent-skill" title="Permanent link">#</a></h2>
-<p>Canonical package path:</p>
-<pre><code class="language-text">skills/oh-my-task/SKILL.md
-</code></pre>
-<p>Use Agent Skills-compatible frontmatter:</p>
-<pre><code class="language-yaml">---
-name: oh-my-task
-description: Manage durable coding tasks, implementation plans, checkpoints, blockers, completion documents, and cross-session context. Use when starting, resuming, checkpointing, switching, completing, documenting, or importing a task.
----
-</code></pre>
-<p>The skill must instruct the agent to:</p>
-<ol>
-<li>Locate <code>OH_MY_TASK_HOME</code> or the default data root.</li>
-<li>Invoke the bundled task runtime internally instead of independently rewriting structured task sections; never expose the runtime command to users.</li>
-<li>Identify itself and provide its current session ID when the harness exposes one.</li>
-<li>Use context resume when a session belongs to another agent.</li>
-<li>Read compact context first and load history only when needed.</li>
-<li>Re-read and merge after stale-revision errors.</li>
-<li>Never force-unlock or force-complete without user approval.</li>
-<li>Avoid secrets and ignored paths in summaries.</li>
-</ol>
-<p>The same canonical skill is distributed/documented for Pi, Claude Code, Codex CLI, Kimi CLI, OpenCode, and other Agent Skills-compatible tools. Agent-specific installation helpers may copy or link it into each harness&rsquo;s supported skill directory. Pi exposes it as <code>/skill:oh-my-task</code>.</p>
-<p>Other agents receive manual task management in v1; Pi alone receives extension lifecycle automation and native session-history import.</p>
-<hr>
-<h2 id="19-privacy-and-security">19. Privacy and Security<a class="headerlink" href="#19-privacy-and-security" title="Permanent link">#</a></h2>
-<ul>
-<li>Store curated summaries, never complete transcripts.</li>
-<li>Do not copy raw tool output.</li>
-<li>Exclude obvious credentials, environment values, secret-file contents, and configured ignored paths.</li>
-<li>Preview session-import summaries before writing.</li>
-<li>Treat task/index files as plaintext user-private data.</li>
-<li>Do not claim encryption or secret-manager guarantees.</li>
-<li>Validate paths before reading imported plans or session files.</li>
-<li>Do not follow untrusted index content as executable instructions.</li>
-<li>Quote/escape all CLI arguments and avoid shell interpolation in the extension.</li>
-<li>Locks and task files must be created with user-only permissions where supported.</li>
-</ul>
-<hr>
-<h2 id="20-suggested-repository-structure">20. Suggested Repository Structure<a class="headerlink" href="#20-suggested-repository-structure" title="Permanent link">#</a></h2>
-<pre><code class="language-text">.
-├── package.json
-├── tsconfig.json
-├── OH-MY-TASK.md
-├── packages/
-│   ├── core/
-│   │   └── src/
-│   │       ├── config.ts
-│   │       ├── paths.ts
-│   │       ├── project-identity.ts
-│   │       ├── schema.ts
-│   │       ├── markdown.ts
-│   │       ├── task-store.ts
-│   │       ├── lock.ts
-│   │       ├── checkpoint.ts
-│   │       ├── index-store.ts
-│   │       ├── session-reference.ts
-│   │       └── privacy.ts
-│   ├── cli/
-│   │   └── src/
-│   │       ├── main.ts
-│   │       └── commands/
-│   └── pi-extension/
-│       └── src/
-│           ├── index.ts
-│           ├── startup.ts
-│           ├── commands.ts
-│           ├── checkpoint-tool.ts
-│           ├── auto-checkpoint.ts
-│           ├── session-import.ts
-│           └── context.ts
-├── skills/
-│   └── oh-my-task/
-│       └── SKILL.md
-├── scripts/
-│   └── install-skills.*
-└── tests/
-    ├── fixtures/
-    ├── core/
-    ├── cli/
-    └── pi-extension/
-</code></pre>
-<p>The published Pi package manifest should expose the extension and skill. Runtime dependencies belong in <code>dependencies</code>; Pi-provided packages belong in <code>peerDependencies</code> as required by Pi package conventions.</p>
-<hr>
-<h2 id="21-implementation-plan">21. Implementation Plan<a class="headerlink" href="#21-implementation-plan" title="Permanent link">#</a></h2>
-<h3 id="phase-1-foundation-and-schemas">Phase 1 — Foundation and schemas<a class="headerlink" href="#phase-1-foundation-and-schemas" title="Permanent link">#</a></h3>
-<ul>
-<li>Create TypeScript workspace/package structure.</li>
-<li>Define config, task frontmatter, plan item, checkpoint, project-name, and session-reference types.</li>
-<li>Select and configure Markdown/YAML parsing that preserves human-readable sections.</li>
-<li>Implement path resolution and <code>OH_MY_TASK_HOME</code> override.</li>
-<li>Implement task ID/slug generation.</li>
-<li>Add schema-version validation and migration interface.</li>
-</ul>
-<p><strong>Exit criteria:</strong> A valid task fixture round-trips without semantic data loss, and invalid fixtures produce actionable diagnostics.</p>
-<h3 id="phase-2-safe-task-store">Phase 2 — Safe task store<a class="headerlink" href="#phase-2-safe-task-store" title="Permanent link">#</a></h3>
-<ul>
-<li>Implement atomic per-task locks and lock metadata.</li>
-<li>Implement stale-lock detection and explicit recovery.</li>
-<li>Implement atomic file replacement and recovery copies.</li>
-<li>Implement revision checks.</li>
-<li>Implement create, read, update, checkpoint, complete, archive, and session-association operations.</li>
-<li>Implement compact current-state projection.</li>
-</ul>
-<p><strong>Exit criteria:</strong> Concurrent mutation tests serialize writes; stale revisions cannot overwrite newer state; interrupted writes preserve the previous valid task.</p>
-<h3 id="phase-3-index-and-manual-inbox">Phase 3 — Index and manual inbox<a class="headerlink" href="#phase-3-index-and-manual-inbox" title="Permanent link">#</a></h3>
-<ul>
-<li>Implement generated-region parsing and replacement.</li>
-<li>Preserve all content outside markers byte-for-byte where practical.</li>
-<li>Generate active/completed task projections with latest session only.</li>
-<li>Add revision metadata for stale-index detection.</li>
-<li>Implement index validation and rebuild.</li>
-<li>Implement manual-inbox parsing, validation, preview, and conversion.</li>
-<li>Handle missing markers through a no-write reconciliation preview.</li>
-</ul>
-<p><strong>Exit criteria:</strong> Index rebuilding is deterministic, preserves manual content, and recovers after a simulated crash between task and index writes.</p>
-<h3 id="phase-4-cli">Phase 4 — CLI<a class="headerlink" href="#phase-4-cli" title="Permanent link">#</a></h3>
-<ul>
-<li>Implement the agreed command surface.</li>
-<li>Add human-readable and JSON output modes.</li>
-<li>Define stable exit/error codes.</li>
-<li>Add config initialization and validation.</li>
-<li>Add project filtering and fixed filtering message data.</li>
-<li>Add plan-file copy-and-normalize import.</li>
-</ul>
-<p><strong>Exit criteria:</strong> All task lifecycle operations work without Pi and are scriptable through JSON output.</p>
-<h3 id="phase-5-pi-extension-manual-lifecycle">Phase 5 — Pi extension: manual lifecycle<a class="headerlink" href="#phase-5-pi-extension-manual-lifecycle" title="Permanent link">#</a></h3>
-<ul>
-<li>Package the extension according to Pi package conventions.</li>
-<li>Suggest the basename of <code>ctx.cwd</code> and ask the user to approve or replace the project name.</li>
-<li>Implement <code>session_start</code> association restoration and startup chooser.</li>
-<li>Use Pi custom entries for branch-aware session association metadata.</li>
-<li>Implement <code>/oh-my-task</code> and subcommands.</li>
-<li>Implement compact context injection.</li>
-<li>Implement native Pi session switching with replacement-session-safe APIs.</li>
-<li>Guard UI behavior by <code>ctx.mode</code>/<code>ctx.hasUI</code>.</li>
-</ul>
-<p><strong>Exit criteria:</strong> A user can create, associate, context-resume, native-resume, switch, checkpoint manually, and complete a task from Pi.</p>
-<h3 id="phase-6-pi-session-initialization">Phase 6 — Pi session initialization<a class="headerlink" href="#phase-6-pi-session-initialization" title="Permanent link">#</a></h3>
-<ul>
-<li>List/search Pi sessions through supported session APIs.</li>
-<li>Filter by keyword, days, and repo path.</li>
-<li>Build safe metadata previews.</li>
-<li>Support selected-session grouping.</li>
-<li>Generate proposed task summaries/plans using the current Pi model or current agent workflow.</li>
-<li>Require preview approval before writing.</li>
-<li>Add privacy filtering and ignored-path handling.</li>
-</ul>
-<p><strong>Exit criteria:</strong> An empty installation can initialize approved tasks from selected Pi sessions without copying raw transcripts.</p>
-<h3 id="phase-7-pi-automatic-mode">Phase 7 — Pi automatic mode<a class="headerlink" href="#phase-7-pi-automatic-mode" title="Permanent link">#</a></h3>
-<ul>
-<li>Register the structured checkpoint tool only when appropriate for auto mode.</li>
-<li>Track file mutations and repository changes.</li>
-<li>Implement guarded <code>agent_settled</code> follow-up behavior.</li>
-<li>Prevent recursive checkpoint loops.</li>
-<li>Flush non-semantic state and clean up on <code>session_shutdown</code>.</li>
-<li>Add status notifications for dirty, checkpointing, conflict, and success states.</li>
-</ul>
-<p><strong>Exit criteria:</strong> Meaningful work produces one checkpoint, pure idle/discussion does not create noise, stale revisions request a merge, and shutdown never starts an unsafe model call.</p>
-<h3 id="phase-8-shared-skill-and-distribution">Phase 8 — Shared skill and distribution<a class="headerlink" href="#phase-8-shared-skill-and-distribution" title="Permanent link">#</a></h3>
-<ul>
-<li>Write the canonical Agent Skills-compatible <code>SKILL.md</code>.</li>
-<li>Add instructions for Pi manual mode and supported external harnesses.</li>
-<li>Add installation helpers/documentation without duplicating skill logic.</li>
-<li>Publish/package <code>oh-my-task-cli</code>, Pi extension, and skill together where practical.</li>
-</ul>
-<p><strong>Exit criteria:</strong> Pi manual mode and at least one non-Pi harness can manage the same task through the shared skill and context resume, with the runtime hidden as an implementation detail.</p>
-<h3 id="phase-9-hardening-and-release">Phase 9 — Hardening and release<a class="headerlink" href="#phase-9-hardening-and-release" title="Permanent link">#</a></h3>
-<ul>
-<li>Test Windows, macOS, and Linux path/atomic-write behavior.</li>
-<li>Test current-folder name suggestions, user-approved replacements, and same-name project warnings.</li>
-<li>Test malformed Markdown, manual edits, missing markers, stale locks, dead PIDs, and recovery files.</li>
-<li>Test Pi new/resume/fork/reload/shutdown lifecycles.</li>
-<li>Document plaintext-data and concurrency behavior.</li>
-<li>Add migration and backup guidance.</li>
-</ul>
-<p><strong>Exit criteria:</strong> v1 acceptance scenarios pass and data remains recoverable under forced interruption tests.</p>
-<hr>
-<h2 id="22-test-strategy">22. Test Strategy<a class="headerlink" href="#22-test-strategy" title="Permanent link">#</a></h2>
-<h3 id="unit-tests">Unit tests<a class="headerlink" href="#unit-tests" title="Permanent link">#</a></h3>
-<ul>
-<li>Schema validation and version rejection.</li>
-<li>Markdown/frontmatter parsing and rendering.</li>
-<li>Folder-name extraction and project-name validation.</li>
-<li>Revision conflict detection.</li>
-<li>Lock acquisition, timeout, and stale-owner checks.</li>
-<li>Generated-region replacement.</li>
-<li>Compact-context construction.</li>
-<li>Privacy/path filtering.</li>
-</ul>
-<h3 id="concurrency-tests">Concurrency tests<a class="headerlink" href="#concurrency-tests" title="Permanent link">#</a></h3>
-<ul>
-<li>Two checkpoint writers for one task.</li>
-<li>Task update racing index rebuild.</li>
-<li>Process termination while holding a lock.</li>
-<li>Process termination between temp write and replacement.</li>
-<li>Stale base revision after lock acquisition.</li>
-</ul>
-<h3 id="pi-integration-tests">Pi integration tests<a class="headerlink" href="#pi-integration-tests" title="Permanent link">#</a></h3>
-<ul>
-<li>Fresh session with relevant tasks.</li>
-<li>Fresh session without tasks.</li>
-<li>Resumed session with an association custom entry.</li>
-<li>Pi-native session switch.</li>
-<li>Cross-agent latest session forcing context resume.</li>
-<li>Auto checkpoint after file edits.</li>
-<li>No checkpoint loop after checkpoint-tool execution.</li>
-<li>Shutdown with and without uncheckpointed changes.</li>
-<li>Print/JSON modes never opening dialogs.</li>
-</ul>
-<h3 id="acceptance-scenarios">Acceptance scenarios<a class="headerlink" href="#acceptance-scenarios" title="Permanent link">#</a></h3>
-<ol>
-<li>Create a task collaboratively and save the approved plan.</li>
-<li>Import an existing plan and verify no live synchronization.</li>
-<li>Resume from one of three recent Pi sessions.</li>
-<li>Continue from compact context in a new Pi session.</li>
-<li>Switch from another agent to Pi using task context only.</li>
-<li>Run two concurrent checkpoints without lost writes.</li>
-<li>Manually add an inbox task and import it after preview.</li>
-<li>Rebuild a stale/deleted index from task files.</li>
-<li>Initialize tasks from filtered Pi sessions.</li>
-<li>Complete a task normally and force-complete one with a recorded reason.</li>
-</ol>
-<hr>
-<h2 id="23-v2-roadmap-todo">23. v2 Roadmap / TODO<a class="headerlink" href="#23-v2-roadmap-todo" title="Permanent link">#</a></h2>
-<ul>
-<li>Add session-history adapters for Claude Code, Codex CLI, Kimi CLI, OpenCode, and other agents.</li>
-<li>Add native session resume adapters only where a harness provides a stable, documented mechanism.</li>
-<li>Improve semantic three-way merging for concurrent plan/status edits.</li>
-<li>Add multi-repository task support.</li>
-<li>Add optional repository-local export/import for team sharing.</li>
-<li>Add optional encrypted or secret-store-backed fields.</li>
-<li>Add richer checkpoint compaction for very long-lived tasks.</li>
-<li>Add optional file watchers for non-Git changes made outside known write tools.</li>
-</ul>
-<hr>
-<h2 id="24-final-agreed-product-rules">24. Final Agreed Product Rules<a class="headerlink" href="#24-final-agreed-product-rules" title="Permanent link">#</a></h2>
-<ol>
-<li>Storage is user-wide and project-filtered at display time.</li>
-<li>The current folder name is the only automatic project suggestion; the user approves it or enters another name.</li>
-<li>Task Markdown files are authoritative; the index is a recoverable projection with a preserved manual inbox.</li>
-<li>Checkpoints update current state and append durable history.</li>
-<li>Concurrent writes are supported through short-lived locks plus revision checks.</li>
-<li>One task may span many sessions and agents, but each session has at most one active task.</li>
-<li>Cross-agent continuation relies on compact task context, not compatible session formats.</li>
-<li>Pi supports native resumption only for compatible Pi sessions.</li>
-<li>The index shows one latest session; task selection shows up to three recent compatible sessions and a context-resume option.</li>
-<li>Users interact only with the shared skill. The Pi extension owns startup/context automation, while the bundled runtime remains an internal implementation detail.</li>
-<li>Auto mode uses Pi lifecycle hooks and a model-callable checkpoint tool.</li>
-<li>Shutdown never initiates a new semantic model call.</li>
-<li>v1 imports Pi session history only; other session adapters are explicit v2 work.</li>
-<li>Imported plans are copied and normalized, not live-linked.</li>
-<li>Session imports and checkpoints store curated summaries, not transcripts, secrets, or raw tool output.</li>
-</ol></article>
+<p>These additions should preserve the central invariant: users interact through the shared skill while task Markdown remains the durable, agent-independent source of truth.</p></article>
     </main>
   </div>
 
