@@ -68,9 +68,10 @@ export async function runCli(argv: string[], io: CliIo = defaultIo()): Promise<n
         const projectName = flagString(flags, "project") ?? suggestProjectName(io.cwd);
         const planPath = flagString(flags, "plan");
         const imported = planPath ? await importPlan(resolve(io.cwd, planPath)) : undefined;
+        const objective = flagString(flags, "objective") ?? imported?.objective;
         const task = await tasks.create({
           title, projectName,
-          objective: flagString(flags, "objective") ?? imported?.objective,
+          ...(objective ? { objective } : {}),
           ...(imported ? { plan: imported.plan, sourcePlan: imported.sourcePlan } : {}),
         });
         await rebuild(); emit(task, `Created ${task.metadata.id} (revision ${task.metadata.revision}).`); return 0;
@@ -157,7 +158,12 @@ async function importPlan(path: string): Promise<{ objective?: string; plan: Pla
 
 async function createInboxTask(tasks: TaskStore, entry: ManualInboxEntry, fallbackProject: string) {
   const plan = entry.planLines.map((title, index) => ({ id: `${slug(title)}-${index + 1}`, title, status: "not-started" as const }));
-  return tasks.create({ title: entry.title, projectName: entry.projectName ?? fallbackProject, objective: entry.objective, plan });
+  return tasks.create({
+    title: entry.title,
+    projectName: entry.projectName ?? fallbackProject,
+    ...(entry.objective ? { objective: entry.objective } : {}),
+    plan,
+  });
 }
 
 function parseArguments(args: string[]): { positional: string[]; flags: Flags } {
@@ -166,7 +172,12 @@ function parseArguments(args: string[]): { positional: string[]; flags: Flags } 
     const value = args[i]!;
     if (!value.startsWith("--")) { positional.push(value); continue; }
     const [rawKey, inline] = value.slice(2).split("=", 2); const key = rawKey!;
-    const next = inline ?? (args[i + 1] && !args[i + 1]!.startsWith("--") ? args[++i] : true);
+    let next: string | boolean = true;
+    if (inline !== undefined) next = inline;
+    else {
+      const candidate = args[i + 1];
+      if (candidate && !candidate.startsWith("--")) { next = candidate; i += 1; }
+    }
     flags[key] = next;
   }
   return { positional, flags };

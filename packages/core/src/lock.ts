@@ -1,5 +1,5 @@
 import { hostname } from "node:os";
-import { mkdir, open, readFile, rm, stat } from "node:fs/promises";
+import { mkdir, open, readFile, rm } from "node:fs/promises";
 import { dirname } from "node:path";
 import type { LockConfig } from "./types.js";
 
@@ -68,7 +68,15 @@ export async function acquireFileLock(lockPath: string, options: AcquireLockOpti
         throw error;
       }
       const existing = await readOwner(lockPath);
-      if (await isReclaimable(lockPath, existing, options.config.staleAfterMs, now())) {
+      // A lock directory briefly exists before owner.json is written. It may also
+      // disappear between mkdir(EEXIST) and this read. Never remove an ownerless
+      // path here: doing so could delete a newly acquired lock (an ABA race).
+      if (!existing) {
+        if (Date.now() >= deadline) throw new LockBusyError(lockPath);
+        await sleep(options.config.retryMs);
+        continue;
+      }
+      if (isReclaimable(existing, options.config.staleAfterMs, now())) {
         await rm(lockPath, { recursive: true, force: true });
         continue;
       }
@@ -93,10 +101,10 @@ async function readOwner(lockPath: string): Promise<LockOwner | undefined> {
   catch { return undefined; }
 }
 
-async function isReclaimable(lockPath: string, owner: LockOwner | undefined, staleAfterMs: number, now: Date): Promise<boolean> {
-  const created = owner ? Date.parse(owner.createdAt) : (await stat(lockPath)).mtimeMs;
+function isReclaimable(owner: LockOwner, staleAfterMs: number, now: Date): boolean {
+  const created = Date.parse(owner.createdAt);
   if (now.getTime() - created < staleAfterMs) return false;
-  if (!owner || owner.hostname !== hostname()) return false;
+  if (owner.hostname !== hostname()) return false;
   return !isProcessAlive(owner.pid);
 }
 
