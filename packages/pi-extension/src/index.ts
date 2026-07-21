@@ -3,6 +3,7 @@ import type { TaskDocument } from "oh-my-task-cli";
 import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation, type TaskAssociation } from "./context.js";
 import { chooseProjectName, createRuntime, rebuild, relevantTasks, type Runtime } from "./runtime.js";
 import { filteringHint, taskLabel } from "./ui.js";
+import { initializeFromPiSessions } from "./session-import.js";
 
 export default function ohMyTaskExtension(pi: ExtensionAPI) {
   let active: TaskAssociation | undefined;
@@ -73,6 +74,11 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
         ctx.ui.notify(`Completed ${completed.metadata.title}`, "info");
         return;
       }
+      if (subcommand === "init") {
+        const created = await initializeFromPiSessions(runtime, await SessionManager.listAll(), ctx);
+        ctx.ui.notify(`Initialized ${created.length} task(s) from Pi sessions.`, "info");
+        return;
+      }
       if (subcommand === "validate") {
         const result = await runtime.index.validate(await runtime.tasks.list());
         ctx.ui.notify(result.valid ? "Oh My Task files are valid." : `Index needs rebuild: ${result.staleTaskIds.join(", ")}`, result.valid ? "info" : "warning");
@@ -81,7 +87,7 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
       if (subcommand === "rebuild-index") {
         await rebuild(runtime); ctx.ui.notify("Oh My Task index rebuilt.", "info"); return;
       }
-      ctx.ui.notify("Usage: /oh-my-task [list|new|resume|switch|checkpoint|complete|validate|rebuild-index]", "warning");
+      ctx.ui.notify("Usage: /oh-my-task [list|new|resume|switch|checkpoint|complete|init|validate|rebuild-index]", "warning");
     },
   });
 
@@ -137,9 +143,9 @@ async function resumeTask(
   if (selected === contextOption) return activateTask(pi, runtime, ctx, task, setActive);
   const sessionId = selected.replace("Resume Pi session ", "");
   const available = await SessionManager.listAll();
-  const target = available.find((item) => item.id === sessionId || item.file.includes(sessionId));
+  const target = available.find((item) => item.id === sessionId || item.path.includes(sessionId));
   if (!target) return ctx.ui.notify(`Pi session ${sessionId} was not found; use context resume instead.`, "warning");
-  await ctx.switchSession(target.file, { withSession: async (replacementCtx) => replacementCtx.ui.notify(`Resumed Pi session ${sessionId}`, "info") });
+  await ctx.switchSession(target.path, { withSession: async (replacementCtx) => replacementCtx.ui.notify(`Resumed Pi session ${sessionId}`, "info") });
 }
 
 function injectContext(pi: ExtensionAPI, task: TaskDocument): void {

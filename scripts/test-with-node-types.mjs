@@ -44,6 +44,16 @@ for (const packageName of await readdir(join(root, "packages"))) {
   }
 }
 
+// Make the transpiled workspace package resolvable to cross-package tests without npm install.
+const localPackage = join(buildRoot, "node_modules", "oh-my-task-cli");
+await mkdir(localPackage, { recursive: true });
+await writeFile(join(localPackage, "package.json"), JSON.stringify({
+  name: "oh-my-task-cli",
+  type: "module",
+  exports: "./index.js",
+}), "utf8");
+await writeFile(join(localPackage, "index.js"), 'export * from "../../packages/core/src/index.js";\n', "utf8");
+
 const child = spawn(process.execPath, ["--test", ...testFiles], { cwd: root, stdio: "inherit" });
 const code = await new Promise((resolveCode, reject) => {
   child.once("error", reject);
