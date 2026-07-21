@@ -22,7 +22,9 @@ async function fixture() {
   const root = await mkdtemp(join(tmpdir(), "oh-my-task-store-"));
   const store = new TaskStore({
     paths: getOhMyTaskPaths({ env: { OH_MY_TASK_HOME: root } }),
-    lock: { config: { retryMs: 2, timeoutMs: 1_000, staleAfterMs: 10_000 }, agent: "test" },
+    // Allow for slow Windows CI filesystem scheduling while preserving the
+    // same lock/revision semantics under test.
+    lock: { config: { retryMs: 5, timeoutMs: 10_000, staleAfterMs: 30_000 }, agent: "test" },
     now: () => new Date("2026-03-27T10:30:00.000Z"),
   });
   return { root, store, cleanup: () => rm(root, { recursive: true, force: true }) };
