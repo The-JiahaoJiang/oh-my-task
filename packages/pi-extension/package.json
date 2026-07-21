@@ -11,7 +11,7 @@
     "test": "node ../../scripts/run-ts-tests.mjs test"
   },
   "dependencies": {
-    "oh-my-task-cli": "workspace:*"
+    "oh-my-task-cli": "*"
   },
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",
