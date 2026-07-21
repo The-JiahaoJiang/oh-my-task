@@ -110,6 +110,77 @@ oh-my-task-cli checkpoint <task-id> --input /path/to/checkpoint.json
 
 Delete temporary checkpoint files if they contain sensitive project details.
 
+## Generate a Completion and Design Document
+
+When the user asks to "generate a completion doc", "document the completed task", or produce a final reference for the current task, create a self-contained document in the current repository. In Pi, an explicit invocation is:
+
+```text
+/skill:oh-my-task generate a completion document for the current task
+```
+
+Use the equivalent skill invocation or natural-language request in other agents.
+
+### Resolve the current task
+
+1. Use the active task ID from injected Oh My Task context when available.
+2. Otherwise list incomplete and completed tasks for the approved project name.
+3. If more than one task could be current, ask the user to select one; never guess.
+4. Read the selected task, including its plan, current state, checkpoints, decisions, relevant files, and safe session references.
+
+```bash
+oh-my-task-cli show <task-id>
+```
+
+If `oh-my-task-cli` is unavailable on `PATH`, use the skill-relative launcher described above.
+
+### Verify implementation context
+
+Ask for approval before reading repository files beyond those already examined in the current session. After approval:
+
+- Start with files explicitly named in the task and plan.
+- Follow only direct implementation references needed to explain the final design.
+- Inspect tests and configuration needed to verify behavior.
+- Do not scan unrelated areas of the repository.
+- Never copy secrets, environment values, private credentials, raw tool output, or large source excerpts.
+- Distinguish verified facts from assumptions. Ask the user about material gaps.
+
+If the task is not completed, warn the user and ask whether to generate a clearly marked draft snapshot or complete the task first.
+
+### Draft the document
+
+Read [the completion document template](assets/completion-doc-template.md) and fill it with verified, task-specific information. The document must be useful to readers who did not participate in the task and include:
+
+- Executive summary and complete introduction
+- Problem context, intended users, goals, and non-goals
+- Final outcome and deviations from the original plan
+- Complete final design: architecture, components, data model, flows, interfaces, commands, configuration, safety, failure handling, and tradeoffs
+- Implementation summary mapped to completed plan items
+- Important files and their responsibilities
+- Setup and usage examples
+- Tests and validation that were actually run
+- Limitations, unresolved issues, and follow-up work
+- Task revision and safe provenance references
+
+Do not present an original proposal as the final design when implementation evidence shows it changed.
+
+### Choose the repository path and approve
+
+Suggest this default path:
+
+```text
+docs/oh-my-task/<task-id>-completion.md
+```
+
+Allow the user to choose another path inside the current repository. Reject paths outside the repository. Before writing:
+
+1. Show the proposed path.
+2. Present a concise outline and any unresolved factual gaps.
+3. Ask the user to approve or edit the draft.
+4. Write only after approval.
+5. Re-read the written file and report its path.
+
+Do not mark or force-complete the task merely because a document was generated. Task completion remains a separate, explicit operation.
+
 ## Complete or Archive
 
 ```bash

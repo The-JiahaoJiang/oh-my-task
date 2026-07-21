@@ -13,6 +13,10 @@ test("shared skill has valid Agent Skills frontmatter and portable CLI guidance"
   assert.match(source, /STALE_REVISION/);
   assert.match(source, /claude-code\|codex-cli\|kimi-cli\|opencode/);
   assert.match(source, /separately ask whether to review and update implementation progress/);
+  assert.match(source, /Generate a Completion and Design Document/);
+  assert.match(source, /docs\/oh-my-task\/<task-id>-completion\.md/);
+  assert.match(source, /complete final design/i);
+  await access(resolve(root, "skills", "oh-my-task", "assets", "completion-doc-template.md"));
 });
 
 test("recovery and migration guidance documents destructive-operation safeguards", async () => {
