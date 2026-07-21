@@ -13,6 +13,7 @@
     "oh-my-task-cli": "workspace:*"
   },
   "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
     "@earendil-works/pi-coding-agent": "*",
     "typebox": "*"
   },
