@@ -39,7 +39,10 @@ test("concurrent critical sections are serialized", async () => {
   const root = await temporaryDirectory();
   try {
     const lockPath = join(root, "locks", "task.lock");
-    const config = { retryMs: 2, timeoutMs: 1_000, staleAfterMs: 10_000 };
+    // Windows CI can take several seconds to create/remove lock directories
+    // while the full test matrix runs in parallel. Keep the assertion focused
+    // on serialization rather than scheduler/filesystem latency.
+    const config = { retryMs: 5, timeoutMs: 10_000, staleAfterMs: 30_000 };
     let active = 0;
     let maximum = 0;
     const order: number[] = [];
