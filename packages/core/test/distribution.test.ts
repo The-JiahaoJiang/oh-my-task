@@ -34,6 +34,8 @@ test("GitHub Pages workflow generates, validates, and deploys the project site",
   assert.match(workflow, /generate_project_site\.py/);
   assert.match(workflow, /check_project_site\.py/);
   assert.match(workflow, /OH-MY-TASK\.html/);
+  assert.match(workflow, /pip install --requirement requirements-site\.txt/);
+  await access(resolve(root, "requirements-site.txt"));
   assert.match(workflow, /actions\/upload-pages-artifact@v3/);
   assert.match(workflow, /actions\/deploy-pages@v4/);
   assert.match(workflow, /pages: write/);
