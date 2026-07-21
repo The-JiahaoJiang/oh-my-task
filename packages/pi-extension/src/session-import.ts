@@ -72,7 +72,7 @@ export async function initializeFromPiSessions(runtime: Runtime, sessions: Sessi
   if (!selected.length) { ctx.ui.notify("No listed session IDs were selected.", "warning"); return []; }
   const grouping = await ctx.ui.select("Task grouping", ["Combine selected sessions into one task", "Create one task per session"]);
   if (!grouping) return [];
-  const projectName = await chooseProjectName(ctx); if (!projectName) return [];
+  const projectName = await chooseProjectName(ctx, runtime); if (!projectName) return [];
   const proposals = grouping.startsWith("Combine") ? [proposalFor(selected)] : selected.map((item) => proposalFor([item]));
   const preview = proposals.map((item) => `${item.title}\nObjective: ${item.objective}\nSessions: ${item.sessionIds.join(", ")}`).join("\n\n");
   const approved = await ctx.ui.confirm("Create proposed task(s)?", preview);

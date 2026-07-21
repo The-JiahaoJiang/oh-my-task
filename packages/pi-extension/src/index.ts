@@ -35,7 +35,7 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
       }
     }
     if (!runtime.config.startupPrompt || !ctx.hasUI) return;
-    const projectName = await chooseProjectName(ctx);
+    const projectName = await chooseProjectName(ctx, runtime);
     if (!projectName) return;
     const candidates = await relevantTasks(runtime, projectName);
     ctx.ui.notify(filteringHint(projectName), "info");
@@ -65,7 +65,7 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
       if (subcommand === "list") return showTasks(runtime, ctx);
       if (subcommand === "new") {
         const request = parseNewTaskArguments(rest.join(" "));
-        const project = await chooseProjectName(ctx); if (!project) return;
+        const project = await chooseProjectName(ctx, runtime); if (!project) return;
         let imported: ImportedPlan | undefined;
         if (request.planPath) {
           const path = resolve(ctx.cwd, request.planPath);
@@ -140,7 +140,7 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
 }
 
 async function showTasks(runtime: Runtime, ctx: ExtensionCommandContext): Promise<void> {
-  const project = await chooseProjectName(ctx); if (!project) return;
+  const project = await chooseProjectName(ctx, runtime); if (!project) return;
   const tasks = await relevantTasks(runtime, project);
   ctx.ui.notify(filteringHint(project), "info");
   if (!tasks.length) ctx.ui.notify("No incomplete tasks for this project.", "info");
@@ -188,7 +188,7 @@ async function resumeTask(
   pi: ExtensionAPI, runtime: Runtime, ctx: ExtensionCommandContext,
   setActive: (association: TaskAssociation) => void,
 ): Promise<void> {
-  const project = await chooseProjectName(ctx); if (!project) return;
+  const project = await chooseProjectName(ctx, runtime); if (!project) return;
   const tasks = await relevantTasks(runtime, project);
   ctx.ui.notify(filteringHint(project), "info");
   const label = await ctx.ui.select("Select task", tasks.map(taskLabel)); if (!label) return;

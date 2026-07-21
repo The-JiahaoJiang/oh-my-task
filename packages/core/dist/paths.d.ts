@@ -2,6 +2,7 @@ export interface OhMyTaskPaths {
     root: string;
     index: string;
     config: string;
+    projectLinks: string;
     tasks: string;
     locks: string;
     recovery: string;

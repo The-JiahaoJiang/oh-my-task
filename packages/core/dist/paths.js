@@ -15,6 +15,7 @@ export function getOhMyTaskPaths(options = {}) {
         root,
         index: join(root, "oh-my-task.md"),
         config: join(root, "config.json"),
+        projectLinks: join(root, "project-links.json"),
         tasks: join(root, "tasks"),
         locks: join(root, "locks"),
         recovery: join(root, "recovery"),

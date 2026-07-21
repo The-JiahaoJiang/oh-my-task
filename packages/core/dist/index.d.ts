@@ -10,6 +10,7 @@ export * from "./migrations.js";
 export * from "./paths.js";
 export * from "./plan-import.js";
 export * from "./project.js";
+export * from "./project-links.js";
 export * from "./schema.js";
 export * from "./task-body.js";
 export * from "./task-store.js";
