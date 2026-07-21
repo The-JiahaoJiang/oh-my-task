@@ -1,4 +1,14 @@
-import type { TaskDocument } from "oh-my-task-cli";
+import type { CheckpointMode, TaskDocument } from "oh-my-task-cli";
+
+export function shouldExposeExtensionCommand(mode: CheckpointMode): boolean {
+  return mode === "auto";
+}
+
+export function manualSkillCommand(action: "create" | "import-plan"): string {
+  return action === "create"
+    ? "/skill:oh-my-task create a new task"
+    : "/skill:oh-my-task import a task plan from @";
+}
 
 export function taskLabel(task: TaskDocument): string {
   return `Task: ${task.metadata.title} · Status: ${task.metadata.status} · Progress: ${task.metadata.progressSummary ?? "Not started"}`;

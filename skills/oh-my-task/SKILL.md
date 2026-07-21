@@ -41,6 +41,13 @@ Focus on Objective, Constraints, Plan, Current State, and Next Action.
 
 ## Create
 
+When the user asks to create a task, provide the same workflow in every agent:
+
+1. Ask for or infer a concise title.
+2. Ask the user to approve the current folder name as the project name only when no workspace link can be found.
+3. Clarify the objective and implementation plan collaboratively, or accept an existing plan file.
+4. Preview the task before creating it.
+
 Collaboratively clarify the objective and plan, or import an existing plan:
 
 ```bash
@@ -49,6 +56,17 @@ oh-my-task-cli new --title "<title>" --project "<project>" --plan ./PLAN.md
 ```
 
 Show normalized imported content to the user before relying on it. Imported plans are copied, not synchronized.
+
+After the user approves an imported plan, separately ask whether to review and update implementation progress. Only when approved:
+
+1. Read the imported plan.
+2. Identify directly related project files from its plan items.
+3. Read only those related files to verify actual implementation state.
+4. Compare verified evidence with every plan item.
+5. Record completed, active, or blocked statuses through a checkpoint.
+6. Treat ambiguous evidence as unresolved instead of guessing.
+
+Do not inspect unrelated files or copy source content, secrets, environment values, or raw tool output into the task.
 
 ## Associate This Session
 

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation } from "../src/context.js";
-import { buildImportedPlanProgressPrompt, filteringHint, parseNewTaskArguments, taskLabel } from "../src/ui.js";
+import { buildImportedPlanProgressPrompt, filteringHint, manualSkillCommand, parseNewTaskArguments, shouldExposeExtensionCommand, taskLabel } from "../src/ui.js";
 
 const task = {
   metadata: {
@@ -56,6 +56,13 @@ test("approved imported-plan review prompt limits inspection and requires eviden
   assert.match(prompt, /verified evidence/);
   assert.match(prompt, /PLAN\.md/);
   assert.match(prompt, /instead of guessing/);
+});
+
+test("manual mode exposes only the shared skill workflow", () => {
+  assert.equal(shouldExposeExtensionCommand("manual"), false);
+  assert.equal(shouldExposeExtensionCommand("auto"), true);
+  assert.equal(manualSkillCommand("create"), "/skill:oh-my-task create a new task");
+  assert.match(manualSkillCommand("import-plan"), /^\/skill:oh-my-task.*@$/);
 });
 
 test("new-task arguments accept @ plan references including spaces", () => {

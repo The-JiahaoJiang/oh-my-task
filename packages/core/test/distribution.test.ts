@@ -12,6 +12,7 @@ test("shared skill has valid Agent Skills frontmatter and portable CLI guidance"
   assert.match(source, /<skill-directory>\/cli\.mjs/);
   assert.match(source, /STALE_REVISION/);
   assert.match(source, /claude-code\|codex-cli\|kimi-cli\|opencode/);
+  assert.match(source, /separately ask whether to review and update implementation progress/);
 });
 
 test("recovery and migration guidance documents destructive-operation safeguards", async () => {

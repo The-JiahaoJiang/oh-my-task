@@ -2,14 +2,15 @@ import { SessionManager, type ExtensionAPI, type ExtensionCommandContext, type E
 import { StringEnum } from "@earendil-works/pi-ai";
 import { Type } from "typebox";
 import { basename, resolve } from "node:path";
-import { importPlanFile, type ImportedPlan, type RelevantFile, type TaskDocument, type TaskStatus } from "oh-my-task-cli";
+import { getOhMyTaskPaths, importPlanFile, loadConfig, type ImportedPlan, type RelevantFile, type TaskDocument, type TaskStatus } from "oh-my-task-cli";
 import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation, type TaskAssociation } from "./context.js";
 import { chooseProjectName, createRuntime, rebuild, relevantTasks, type Runtime } from "./runtime.js";
-import { buildImportedPlanProgressPrompt, filteringHint, parseNewTaskArguments, taskLabel } from "./ui.js";
+import { buildImportedPlanProgressPrompt, filteringHint, manualSkillCommand, parseNewTaskArguments, shouldExposeExtensionCommand, taskLabel } from "./ui.js";
 import { initializeFromPiSessions } from "./session-import.js";
 import { AutoCheckpointController } from "./auto-checkpoint.js";
 
-export default function ohMyTaskExtension(pi: ExtensionAPI) {
+export default async function ohMyTaskExtension(pi: ExtensionAPI) {
+  const startupConfig = await loadConfig(getOhMyTaskPaths());
   let active: TaskAssociation | undefined;
   let runtime: Runtime | undefined;
   let autoToolRegistered = false;
@@ -44,11 +45,16 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
     const choice = await ctx.ui.select("Oh My Task", options);
     if (!choice || choice === "Continue without a task") return;
     if (choice === loadPlanOption) {
-      ctx.ui.setEditorText("/oh-my-task new --plan @");
+      ctx.ui.setEditorText(runtime.config.checkpointMode === "manual" ? manualSkillCommand("import-plan") : "/oh-my-task new --plan @");
       ctx.ui.notify("Use @ file completion in the editor, select the plan, then submit the command.", "info");
       return;
     }
     if (choice === "Create a new task") {
+      if (runtime.config.checkpointMode === "manual") {
+        ctx.ui.setEditorText(manualSkillCommand("create"));
+        ctx.ui.notify("Submit the skill command to create the task through the shared cross-agent workflow.", "info");
+        return;
+      }
       const task = await createTaskInteractively(runtime, ctx, projectName);
       if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
       return;
@@ -57,7 +63,7 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
     if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
   });
 
-  pi.registerCommand("oh-my-task", {
+  if (shouldExposeExtensionCommand(startupConfig.checkpointMode)) pi.registerCommand("oh-my-task", {
     description: "List, create, resume, switch, checkpoint, complete, or validate durable tasks",
     handler: async (args, ctx) => {
       runtime ??= await createRuntime(ctx.cwd, "pi", ctx.sessionManager.getSessionId());
