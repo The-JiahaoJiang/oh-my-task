@@ -17,6 +17,8 @@
     "typecheck": "npm run build --workspace=oh-my-task-cli && npm run typecheck --workspace=oh-my-task-pi",
     "validate": "npm run typecheck && npm test && npm run build",
     "test:local": "node scripts/test-with-node-types.mjs",
-    "install-skill": "node scripts/install-skills.mjs"
+    "install-skill": "node scripts/install-skills.mjs",
+    "site:build": "python scripts/generate_project_site.py --output _site",
+    "site:check": "python scripts/check_project_site.py _site"
   }
 }

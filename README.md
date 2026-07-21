@@ -15,14 +15,18 @@ Users interact only through the Agent Skills-compatible `oh-my-task` skill in Pi
 
 The bundled Pi extension provides startup discovery, context restoration, and optional automatic checkpoints without exposing a separate command. Storage, locking, revision checks, and index updates are internal implementation details.
 
-See [OH-MY-TASK.md](OH-MY-TASK.md) for the complete design.
+Visit the [project website](https://the-jiahaojiang.github.io/oh-my-task/) for installation, usage, extension behavior, and configuration. See [OH-MY-TASK.md](OH-MY-TASK.md) for the complete design.
 
 ## Development
 
 ```bash
 npm install
 npm run validate
+npm run site:build
+npm run site:check
 ```
+
+GitHub Actions generates and deploys the dependency-free project site from `scripts/generate_project_site.py`.
 
 When the configured registry is unavailable on Node 24, the dependency-light runtime suite can be run with:
 

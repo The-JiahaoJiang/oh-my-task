@@ -1,8 +1,11 @@
 node_modules/
+__pycache__/
+*.pyc
 dist/
 !packages/core/dist/
 !packages/core/dist/**
 coverage/
+_site/
 .test-build/
 *.tmp
 .DS_Store

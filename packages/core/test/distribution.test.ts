@@ -28,6 +28,17 @@ test("recovery and migration guidance documents destructive-operation safeguards
   assert.match(source, /Name collisions/);
 });
 
+test("GitHub Pages workflow generates, validates, and deploys the project site", async () => {
+  const workflow = await readFile(resolve(root, ".github", "workflows", "pages.yml"), "utf8");
+  assert.match(workflow, /generate_project_site\.py/);
+  assert.match(workflow, /check_project_site\.py/);
+  assert.match(workflow, /actions\/upload-pages-artifact@v3/);
+  assert.match(workflow, /actions\/deploy-pages@v4/);
+  assert.match(workflow, /pages: write/);
+  await access(resolve(root, "scripts", "generate_project_site.py"));
+  await access(resolve(root, "scripts", "check_project_site.py"));
+});
+
 test("root Pi package manifest references existing extension and skill", async () => {
   const manifest = JSON.parse(await readFile(resolve(root, "package.json"), "utf8")) as {
     keywords: string[];
