@@ -1,21 +1,20 @@
 import {
   getOhMyTaskPaths,
   IndexStore,
-  ProjectLinkStore,
   loadConfig,
   suggestProjectName,
   TaskStore,
   validateProjectName,
-  workspaceKey,
   type OhMyTaskConfig,
   type TaskDocument,
 } from "oh-my-task-cli";
+import { ExtensionProjectLinkStore, workspaceKey } from "./project-links.js";
 
 export interface Runtime {
   config: OhMyTaskConfig;
   tasks: TaskStore;
   index: IndexStore;
-  projectLinks: ProjectLinkStore;
+  projectLinks: ExtensionProjectLinkStore;
 }
 
 export async function createRuntime(cwd: string, agent = "pi", sessionId?: string): Promise<Runtime> {
@@ -26,7 +25,7 @@ export async function createRuntime(cwd: string, agent = "pi", sessionId?: strin
     config,
     tasks: new TaskStore({ paths, lock }),
     index: new IndexStore({ paths, lock }),
-    projectLinks: new ProjectLinkStore(paths, lock),
+    projectLinks: new ExtensionProjectLinkStore(paths, lock),
   };
 }
 

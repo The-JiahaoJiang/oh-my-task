@@ -45,6 +45,12 @@ test("Pi extension cannot register a competing user command", async () => {
   assert.doesNotMatch(source, /\/oh-my-task\b/);
 });
 
+test("Pi hot reload does not require the core ProjectLinkStore export", async () => {
+  const source = await readFile(resolve(root, "packages", "pi-extension", "src", "runtime.ts"), "utf8");
+  assert.doesNotMatch(source, /new ProjectLinkStore\s*\(/);
+  assert.match(source, /new ExtensionProjectLinkStore\s*\(/);
+});
+
 test("root Pi package manifest references existing extension and skill", async () => {
   const manifest = JSON.parse(await readFile(resolve(root, "package.json"), "utf8")) as {
     keywords: string[];
