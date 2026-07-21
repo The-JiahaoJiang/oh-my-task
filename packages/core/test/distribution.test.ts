@@ -30,8 +30,10 @@ test("recovery and migration guidance documents destructive-operation safeguards
 
 test("GitHub Pages workflow generates, validates, and deploys the project site", async () => {
   const workflow = await readFile(resolve(root, ".github", "workflows", "pages.yml"), "utf8");
+  assert.match(workflow, /generate_design_html\.py/);
   assert.match(workflow, /generate_project_site\.py/);
   assert.match(workflow, /check_project_site\.py/);
+  assert.match(workflow, /OH-MY-TASK\.html/);
   assert.match(workflow, /actions\/upload-pages-artifact@v3/);
   assert.match(workflow, /actions\/deploy-pages@v4/);
   assert.match(workflow, /pages: write/);

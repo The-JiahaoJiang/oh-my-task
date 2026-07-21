@@ -9,6 +9,7 @@ on:
       - "scripts/check_project_site.py"
       - "README.md"
       - "OH-MY-TASK.md"
+      - "OH-MY-TASK.html"
       - "package.json"
       - "skills/**"
       - "packages/pi-extension/**"
@@ -35,6 +36,8 @@ jobs:
           python-version: "3.12"
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Generate architecture reference
+        run: python scripts/generate_design_html.py
       - name: Generate site
         run: python scripts/generate_project_site.py --output _site
       - name: Validate generated site

@@ -7,6 +7,7 @@ from pathlib import Path
 import html
 import json
 import os
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = ArgumentParser()
@@ -122,7 +123,7 @@ page = r'''<!doctype html>
         <div class="eyebrow">Markdown-first · agent-independent</div>
         <h1>Plans survive sessions.<br><span class="gradient">Context survives agents.</span></h1>
         <p class="lead">Oh My Task keeps implementation plans, verified progress, decisions, blockers, and next actions in durable task documents—so work can continue without dragging an entire conversation along.</p>
-        <div class="actions"><a class="button primary" href="#use">Get started</a><a class="button" href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/OH-MY-TASK.md">Read the design</a></div>
+        <div class="actions"><a class="button primary" href="#use">Get started</a><a class="button" href="OH-MY-TASK.html">Architecture reference</a><a class="button" href="https://github.com/The-JiahaoJiang/oh-my-task/blob/main/OH-MY-TASK.md">Markdown source</a></div>
       </div>
       <div class="terminal" aria-label="Example terminal workflow">
         <div class="terminal-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
@@ -244,5 +245,10 @@ page = (page.replace("{{VERSION}}", html.escape(str(version)))
             .replace("{{REVISION}}", html.escape(revision))
             .replace("{{GENERATED}}", html.escape(generated)))
 (output / "index.html").write_text(page, encoding="utf-8", newline="\n")
+architecture_source = ROOT / "OH-MY-TASK.html"
+if not architecture_source.exists():
+    raise SystemExit("OH-MY-TASK.html is missing; run scripts/generate_design_html.py first")
+shutil.copyfile(architecture_source, output / "OH-MY-TASK.html")
 (output / ".nojekyll").write_text("", encoding="utf-8")
 print(f"Generated {output / 'index.html'}")
+print(f"Published {output / 'OH-MY-TASK.html'}")
