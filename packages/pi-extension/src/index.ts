@@ -1,16 +1,13 @@
-import { SessionManager, type ExtensionAPI, type ExtensionCommandContext, type ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { type ExtensionAPI, type ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { StringEnum } from "@earendil-works/pi-ai";
 import { Type } from "typebox";
-import { basename, resolve } from "node:path";
-import { getOhMyTaskPaths, importPlanFile, loadConfig, type ImportedPlan, type RelevantFile, type TaskDocument, type TaskStatus } from "oh-my-task-cli";
-import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation, type TaskAssociation } from "./context.js";
+import type { RelevantFile, TaskDocument, TaskStatus } from "oh-my-task-cli";
+import { ASSOCIATION_ENTRY, buildCompactContext, findAssociation, type TaskAssociation } from "./context.js";
 import { chooseProjectName, createRuntime, rebuild, relevantTasks, type Runtime } from "./runtime.js";
-import { buildImportedPlanProgressPrompt, filteringHint, manualSkillCommand, parseNewTaskArguments, shouldExposeExtensionCommand, taskLabel } from "./ui.js";
-import { initializeFromPiSessions } from "./session-import.js";
+import { filteringHint, manualSkillCommand, taskLabel } from "./ui.js";
 import { AutoCheckpointController } from "./auto-checkpoint.js";
 
-export default async function ohMyTaskExtension(pi: ExtensionAPI) {
-  const startupConfig = await loadConfig(getOhMyTaskPaths());
+export default function ohMyTaskExtension(pi: ExtensionAPI) {
   let active: TaskAssociation | undefined;
   let runtime: Runtime | undefined;
   let autoToolRegistered = false;
@@ -58,78 +55,6 @@ export default async function ohMyTaskExtension(pi: ExtensionAPI) {
     if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
   });
 
-  if (shouldExposeExtensionCommand(startupConfig.checkpointMode)) pi.registerCommand("oh-my-task", {
-    description: "List, create, resume, switch, checkpoint, complete, or validate durable tasks",
-    handler: async (args, ctx) => {
-      runtime ??= await createRuntime(ctx.cwd, "pi", ctx.sessionManager.getSessionId());
-      const [subcommand = "list", ...rest] = args.trim().split(/\s+/).filter(Boolean);
-      if (subcommand === "list") return showTasks(runtime, ctx);
-      if (subcommand === "new") {
-        const request = parseNewTaskArguments(rest.join(" "));
-        const project = await chooseProjectName(ctx, runtime); if (!project) return;
-        let imported: ImportedPlan | undefined;
-        let reviewImportedProgress = false;
-        if (request.planPath) {
-          const path = resolve(ctx.cwd, request.planPath);
-          imported = await importPlanFile(path);
-          const preview = [
-            `Source: ${path}`,
-            `Title: ${request.title || imported.suggestedTitle || basename(path)}`,
-            `Objective: ${imported.objective ?? "Not provided"}`,
-            `Plan items: ${imported.plan.length}`,
-            ...imported.plan.slice(0, 8).map((item) => `- [${item.status}] ${item.title}`),
-          ].join("\n");
-          if (!await ctx.ui.confirm("Import this task plan?", preview)) return;
-          reviewImportedProgress = await ctx.ui.confirm(
-            "Review and update implementation progress?",
-            "If approved, Pi will read the imported plan, identify directly related project files, inspect those files, and update task progress from verified evidence. Unrelated files and sensitive content must not be scanned or copied.",
-          );
-        }
-        const task = await createTaskInteractively(runtime, ctx, project, request.title, imported);
-        if (task) {
-          const activated = await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
-          if (reviewImportedProgress) pi.sendUserMessage(buildImportedPlanProgressPrompt(activated));
-        }
-        return;
-      }
-      if (subcommand === "resume" || subcommand === "switch") {
-        return resumeTask(pi, runtime, ctx, (value) => { active = value; });
-      }
-      if (subcommand === "checkpoint") {
-        pi.sendUserMessage("Use /skill:oh-my-task to review the active task and record a manual checkpoint with oh-my-task-cli.");
-        return;
-      }
-      if (subcommand === "complete") {
-        if (!active) return ctx.ui.notify("No active Oh My Task task.", "warning");
-        const task = await runtime.tasks.read(active.taskId);
-        const force = rest.includes("--force");
-        const reason = force ? await ctx.ui.input("Force-completion reason") : undefined;
-        const completed = await runtime.tasks.complete(task.metadata.id, {
-          baseRevision: task.metadata.revision, force, ...(reason ? { reason } : {}),
-        });
-        active.revision = completed.metadata.revision;
-        pi.appendEntry(ASSOCIATION_ENTRY, active);
-        await rebuild(runtime);
-        ctx.ui.notify(`Completed ${completed.metadata.title}`, "info");
-        return;
-      }
-      if (subcommand === "init") {
-        const created = await initializeFromPiSessions(runtime, await SessionManager.listAll(), ctx);
-        ctx.ui.notify(`Initialized ${created.length} task(s) from Pi sessions.`, "info");
-        return;
-      }
-      if (subcommand === "validate") {
-        const result = await runtime.index.validate(await runtime.tasks.list());
-        ctx.ui.notify(result.valid ? "Oh My Task files are valid." : `Index needs rebuild: ${result.staleTaskIds.join(", ")}`, result.valid ? "info" : "warning");
-        return;
-      }
-      if (subcommand === "rebuild-index") {
-        await rebuild(runtime); ctx.ui.notify("Oh My Task index rebuilt.", "info"); return;
-      }
-      ctx.ui.notify("Usage: /oh-my-task [list|new|resume|switch|checkpoint|complete|init|validate|rebuild-index]", "warning");
-    },
-  });
-
   pi.on("tool_execution_end", async (event) => {
     if (runtime?.config.checkpointMode === "auto") autoCheckpoint.observeTool(event.toolName, event.isError);
   });
@@ -148,38 +73,6 @@ export default async function ohMyTaskExtension(pi: ExtensionAPI) {
   });
 }
 
-async function showTasks(runtime: Runtime, ctx: ExtensionCommandContext): Promise<void> {
-  const project = await chooseProjectName(ctx, runtime); if (!project) return;
-  const tasks = await relevantTasks(runtime, project);
-  ctx.ui.notify(filteringHint(project), "info");
-  if (!tasks.length) ctx.ui.notify("No incomplete tasks for this project.", "info");
-  else await ctx.ui.select("Incomplete tasks", tasks.map(taskLabel));
-}
-
-async function createTaskInteractively(
-  runtime: Runtime,
-  ctx: ExtensionContext,
-  projectName: string,
-  suppliedTitle = "",
-  imported?: ImportedPlan,
-): Promise<TaskDocument | undefined> {
-  const title = suppliedTitle || imported?.suggestedTitle || await ctx.ui.input("Task title", imported?.sourcePlan.path ? basename(imported.sourcePlan.path) : undefined);
-  if (!title) return undefined;
-  const objective = imported?.objective ?? await ctx.ui.input("Initial objective (optional)");
-  if (!imported) {
-    const method = await ctx.ui.select("Implementation plan", ["Develop the plan with the agent", "Import an existing plan with @file or oh-my-task-cli"]);
-    if (!method) return undefined;
-  }
-  const task = await runtime.tasks.create({
-    title,
-    projectName,
-    ...(objective ? { objective } : {}),
-    ...(imported ? { plan: imported.plan, sourcePlan: imported.sourcePlan } : {}),
-  });
-  await rebuild(runtime);
-  return task;
-}
-
 async function activateTask(
   pi: ExtensionAPI, runtime: Runtime, ctx: ExtensionContext, task: TaskDocument,
   setActive: (association: TaskAssociation) => void,
@@ -192,27 +85,6 @@ async function activateTask(
   ctx.ui.setStatus("oh-my-task", `task: ${associated.metadata.title}`);
   ctx.ui.notify(`Loaded task context for ${associated.metadata.title}`, "info");
   return associated;
-}
-
-async function resumeTask(
-  pi: ExtensionAPI, runtime: Runtime, ctx: ExtensionCommandContext,
-  setActive: (association: TaskAssociation) => void,
-): Promise<void> {
-  const project = await chooseProjectName(ctx, runtime); if (!project) return;
-  const tasks = await relevantTasks(runtime, project);
-  ctx.ui.notify(filteringHint(project), "info");
-  const label = await ctx.ui.select("Select task", tasks.map(taskLabel)); if (!label) return;
-  const task = tasks.find((candidate) => taskLabel(candidate) === label); if (!task) return;
-  const sessions = extractRecentSessions(task, "pi", runtime.config.sessionDisplayLimit);
-  const contextOption = "Continue in current session from task context";
-  const options = [contextOption, ...sessions.map((session) => `Resume Pi session ${session.sessionId}`)];
-  const selected = await ctx.ui.select("Resume method", options); if (!selected) return;
-  if (selected === contextOption) { await activateTask(pi, runtime, ctx, task, setActive); return; }
-  const sessionId = selected.replace("Resume Pi session ", "");
-  const available = await SessionManager.listAll();
-  const target = available.find((item) => item.id === sessionId || item.path.includes(sessionId));
-  if (!target) return ctx.ui.notify(`Pi session ${sessionId} was not found; use context resume instead.`, "warning");
-  await ctx.switchSession(target.path, { withSession: async (replacementCtx) => replacementCtx.ui.notify(`Resumed Pi session ${sessionId}`, "info") });
 }
 
 function registerAutoCheckpointTool(

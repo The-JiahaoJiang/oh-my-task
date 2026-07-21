@@ -39,6 +39,12 @@ test("GitHub Pages workflow generates, validates, and deploys the project site",
   await access(resolve(root, "scripts", "check_project_site.py"));
 });
 
+test("Pi extension cannot register a competing user command", async () => {
+  const source = await readFile(resolve(root, "packages", "pi-extension", "src", "index.ts"), "utf8");
+  assert.doesNotMatch(source, /registerCommand\s*\(\s*["']oh-my-task["']/);
+  assert.doesNotMatch(source, /\/oh-my-task\b/);
+});
+
 test("root Pi package manifest references existing extension and skill", async () => {
   const manifest = JSON.parse(await readFile(resolve(root, "package.json"), "utf8")) as {
     keywords: string[];

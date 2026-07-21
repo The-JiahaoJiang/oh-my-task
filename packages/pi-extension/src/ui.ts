@@ -1,8 +1,4 @@
-import type { CheckpointMode, TaskDocument } from "oh-my-task-cli";
-
-export function shouldExposeExtensionCommand(_mode: CheckpointMode): boolean {
-  return false;
-}
+import type { TaskDocument } from "oh-my-task-cli";
 
 export function manualSkillCommand(action: "create" | "import-plan"): string {
   return action === "create"
