@@ -13,3 +13,4 @@ export * from "./schema.js";
 export * from "./task-body.js";
 export * from "./task-store.js";
 export * from "./types.js";
+export * from "./yaml.js";

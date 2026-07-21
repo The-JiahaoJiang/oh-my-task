@@ -1,5 +1,5 @@
-import { parseDocument, stringify } from "yaml";
 import { ValidationError } from "./errors.js";
+import { parseFrontmatterYaml, stringifyFrontmatterYaml } from "./yaml.js";
 import { migrateTaskMetadata } from "./migrations.js";
 import type { TaskDocument, TaskMetadata } from "./types.js";
 
@@ -14,23 +14,15 @@ export function parseTaskDocument(input: string): TaskDocument {
   }
 
   const yamlSource = match[1] ?? "";
-  const document = parseDocument(yamlSource, { prettyErrors: true, strict: true });
-  if (document.errors.length) {
-    throw new ValidationError("Task frontmatter contains invalid YAML.", document.errors.map((error) => ({
-      path: "frontmatter",
-      message: error.message,
-    })));
-  }
-
   return {
-    metadata: migrateTaskMetadata(document.toJS()),
+    metadata: migrateTaskMetadata(parseFrontmatterYaml(yamlSource)),
     body: input.slice(match[0].length),
   };
 }
 
 export function serializeTaskDocument(document: TaskDocument): string {
   const metadata = migrateTaskMetadata(document.metadata);
-  const yaml = stringify(metadata, { lineWidth: 0 }).trimEnd();
+  const yaml = stringifyFrontmatterYaml(metadata).trimEnd();
   return `---\n${yaml}\n---\n${document.body}`;
 }
 

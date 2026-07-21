@@ -21,8 +21,5 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node ../../scripts/run-ts-tests.mjs test"
-  },
-  "dependencies": {
-    "yaml": "^2.8.0"
   }
 }

@@ -17,6 +17,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
+      - name: Install development and Pi SDK packages
+        run: npm install --no-save typescript@5.9.3 tsx@4.20.6 @types/node@24 @earendil-works/pi-ai@0.80.7 @earendil-works/pi-coding-agent@0.80.7 typebox@1.1.38
       - run: npm run validate
 
   node24-fallback:
@@ -26,5 +28,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - run: npm install
+      - run: npm install --omit=dev
       - run: npm run test:local
