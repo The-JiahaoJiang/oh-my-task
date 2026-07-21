@@ -1,0 +1,25 @@
+{
+  "name": "oh-my-task-cli",
+  "version": "0.1.0",
+  "description": "Portable task storage and CLI core for Oh My Task",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test test/**/*.test.ts"
+  },
+  "dependencies": {
+    "yaml": "^2.8.0"
+  }
+}

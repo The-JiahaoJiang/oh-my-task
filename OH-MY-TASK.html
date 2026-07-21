@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Oh My Task final design and implementation plan">
+  <title>Oh My Task — Design Review</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d18;
+      --surface: rgba(18, 25, 43, .78);
+      --surface-solid: #12192b;
+      --surface-2: #192238;
+      --text: #e8edf8;
+      --muted: #9ba8c0;
+      --line: rgba(153, 170, 204, .18);
+      --accent: #8b7cff;
+      --accent-2: #36d7c4;
+      --accent-soft: rgba(139, 124, 255, .13);
+      --warn: #ffca6a;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .34);
+      --code: #0b1120;
+      --max: 920px;
+    }
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f4f6fb;
+      --surface: rgba(255, 255, 255, .82);
+      --surface-solid: #fff;
+      --surface-2: #edf0f8;
+      --text: #172033;
+      --muted: #63708a;
+      --line: rgba(33, 47, 75, .14);
+      --accent: #6557e8;
+      --accent-2: #008e82;
+      --accent-soft: rgba(101, 87, 232, .09);
+      --warn: #9b6100;
+      --shadow: 0 24px 70px rgba(60, 72, 105, .13);
+      --code: #eef1f8;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body {
+      margin: 0;
+      min-width: 300px;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(139,124,255,.13), transparent 30rem),
+        radial-gradient(circle at 0% 35%, rgba(54,215,196,.08), transparent 26rem),
+        var(--bg);
+      color: var(--text);
+      font: 16px/1.72 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--accent-2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .progress { position: fixed; inset: 0 0 auto; height: 3px; z-index: 100; background: transparent; }
+    .progress span { display: block; width: 0; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; gap: 12px;
+      min-height: 62px; padding: 10px 22px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 74%, transparent);
+      backdrop-filter: blur(18px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; color: var(--text); font-weight: 760; letter-spacing: -.02em; }
+    .brand:hover { text-decoration: none; }
+    .logo { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: white; background: linear-gradient(135deg, var(--accent), #5a42c8); box-shadow: 0 8px 25px rgba(105,86,238,.32); }
+    .toolbar { display: flex; gap: 8px; }
+    button, .search {
+      min-height: 38px; border: 1px solid var(--line); border-radius: 10px;
+      color: var(--text); background: var(--surface); font: inherit;
+    }
+    button { cursor: pointer; padding: 7px 11px; }
+    button:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .search { width: min(270px, 25vw); padding: 7px 11px; outline: none; }
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 36px; max-width: 1320px; margin: 0 auto; padding: 30px 26px 80px; }
+    .sidebar { position: sticky; top: 88px; height: calc(100vh - 112px); overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); backdrop-filter: blur(16px); box-shadow: var(--shadow); }
+    .sidebar-label { margin: 0 0 12px; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .toc ul { list-style: none; margin: 0; padding: 0; }
+    .toc li { margin: 2px 0; }
+    .toc li ul { margin: 3px 0 8px 13px; padding-left: 10px; border-left: 1px solid var(--line); }
+    .toc a { display: block; padding: 6px 9px; border-radius: 8px; color: var(--muted); font-size: .87rem; line-height: 1.35; }
+    .toc a:hover, .toc a.active { color: var(--text); background: var(--accent-soft); text-decoration: none; }
+    .toc a.active { box-shadow: inset 2px 0 var(--accent); }
+    .toc li.filtered { display: none; }
+    .sidebar-meta { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; }
+    main { min-width: 0; }
+    .hero { position: relative; overflow: hidden; padding: 48px 50px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: 24px; background: linear-gradient(145deg, var(--surface-solid), color-mix(in srgb, var(--surface-solid) 86%, var(--accent))); box-shadow: var(--shadow); }
+    .hero::after { content: ""; position: absolute; width: 250px; height: 250px; right: -80px; top: -100px; border-radius: 50%; background: radial-gradient(circle, rgba(54,215,196,.23), transparent 68%); }
+    .eyebrow { color: var(--accent-2); font-size: .76rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .hero h1 { max-width: 720px; margin: 10px 0 14px; font-size: clamp(2.2rem, 5vw, 4.25rem); line-height: 1.02; letter-spacing: -.055em; }
+    .hero p { max-width: 690px; margin: 0; color: var(--muted); font-size: 1.05rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .chip { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: rgba(255,255,255,.025); font-size: .78rem; }
+    article { padding: 34px 50px 60px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); backdrop-filter: blur(15px); box-shadow: var(--shadow); }
+    article > h1:first-child { display: none; }
+    h2, h3, h4 { position: relative; line-height: 1.25; letter-spacing: -.025em; }
+    h2 { margin: 3.7rem 0 1.1rem; padding-top: .3rem; font-size: 1.72rem; }
+    h2:first-of-type { margin-top: .5rem; }
+    h2::before { content: ""; position: absolute; left: -18px; top: .35rem; width: 4px; height: 1.5rem; border-radius: 5px; background: linear-gradient(var(--accent), var(--accent-2)); }
+    h3 { margin: 2.35rem 0 .8rem; font-size: 1.22rem; color: color-mix(in srgb, var(--text) 92%, var(--accent)); }
+    h4 { margin-top: 1.8rem; }
+    h2 .headerlink, h3 .headerlink { margin-left: .4em; opacity: 0; color: var(--muted); font-weight: 400; }
+    h2:hover .headerlink, h3:hover .headerlink { opacity: 1; }
+    p, li { max-width: var(--max); }
+    strong { color: color-mix(in srgb, var(--text) 93%, white); }
+    ul, ol { padding-left: 1.45rem; }
+    li { margin: .28rem 0; }
+    li::marker { color: var(--accent); }
+    hr { height: 1px; margin: 3.3rem 0; border: 0; background: linear-gradient(90deg, transparent, var(--line) 12%, var(--line) 88%, transparent); }
+    code { padding: .14em .38em; border: 1px solid var(--line); border-radius: 5px; color: color-mix(in srgb, var(--accent-2) 84%, var(--text)); background: var(--code); font: .88em/1.5 "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    pre { overflow: auto; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--code); box-shadow: inset 0 1px rgba(255,255,255,.025); }
+    pre code { padding: 0; border: 0; color: var(--text); background: none; }
+    blockquote { margin: 1.4rem 0; padding: 12px 18px; border-left: 3px solid var(--accent-2); border-radius: 0 10px 10px 0; color: var(--muted); background: color-mix(in srgb, var(--accent-2) 7%, transparent); }
+    table { display: block; overflow-x: auto; width: max-content; max-width: 100%; border-collapse: collapse; margin: 1.4rem 0; }
+    th, td { padding: 10px 13px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--surface-2); }
+    .review-note { display: none; margin: 12px 0 24px; padding: 14px; border: 1px dashed color-mix(in srgb, var(--warn) 60%, var(--line)); border-radius: 12px; background: color-mix(in srgb, var(--warn) 6%, transparent); }
+    body.reviewing .review-note { display: block; }
+    .review-note label { display: block; margin-bottom: 7px; color: var(--warn); font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .review-note textarea { width: 100%; min-height: 74px; resize: vertical; padding: 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--text); background: var(--bg); font: inherit; outline: none; }
+    .review-note textarea:focus { border-color: var(--warn); }
+    .note-count { display: none; min-width: 20px; padding: 1px 6px; margin-left: 4px; border-radius: 999px; color: var(--bg); background: var(--warn); font-size: .7rem; font-weight: 800; }
+    .note-count.visible { display: inline-block; }
+    .mobile-toc { display: none; }
+    .footer { max-width: 1320px; margin: -50px auto 0; padding: 0 26px 36px; color: var(--muted); font-size: .8rem; text-align: right; }
+    @media (max-width: 900px) {
+      .layout { display: block; padding: 18px 14px 70px; }
+      .sidebar { display: none; }
+      .mobile-toc { display: inline-flex; }
+      .hero, article { padding: 30px 24px; border-radius: 18px; }
+      .hero { padding-top: 38px; }
+      h2::before { left: -11px; }
+      .search { display: none; }
+      .topbar { padding-inline: 14px; }
+      button .button-label { display: none; }
+    }
+    @media print {
+      :root { --bg: white; --surface: white; --surface-solid: white; --text: #111827; --muted: #4b5563; --line: #d5d9e2; --code: #f3f4f6; }
+      .topbar, .sidebar, .progress, .review-note, .footer { display: none !important; }
+      body { background: white; font-size: 10pt; }
+      .layout { display: block; max-width: none; padding: 0; }
+      .hero, article { padding: 0; border: 0; box-shadow: none; background: white; }
+      .hero { margin-bottom: 25px; }
+      .hero h1 { font-size: 30pt; }
+      article > h1:first-child { display: none; }
+      h2 { break-after: avoid; margin-top: 24px; }
+      h3, pre, table { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+  <header class="topbar">
+    <a class="brand" href="#top"><span class="logo">✓</span><span>Oh My Task</span></a>
+    <input id="search" class="search" type="search" placeholder="Filter sections…  /" aria-label="Filter table of contents">
+    <div class="toolbar">
+      <button id="reviewToggle" title="Toggle section review notes">✎ <span class="button-label">Review</span><span id="noteCount" class="note-count">0</span></button>
+      <button id="exportNotes" title="Export review notes as Markdown">⇩ <span class="button-label">Notes</span></button>
+      <button id="themeToggle" title="Toggle color theme">☼</button>
+      <button class="mobile-toc" id="mobileToc" title="Jump to section">☰</button>
+      <button onclick="window.print()" title="Print or save as PDF">⎙</button>
+    </div>
+  </header>
+
+  <div class="layout" id="top">
+    <aside class="sidebar" id="sidebar">
+      <p class="sidebar-label">Design sections</p>
+      <nav class="toc" aria-label="Table of contents"><div class="toc">
+<ul>
+<li><a href="#1-purpose">1. Purpose</a></li>
+<li><a href="#2-goals">2. Goals</a></li>
+<li><a href="#3-non-goals-for-v1">3. Non-goals for v1</a></li>
+<li><a href="#4-terminology">4. Terminology</a></li>
+<li><a href="#5-storage-layout">5. Storage Layout</a><ul>
+<li><a href="#responsibilities">Responsibilities</a></li>
+</ul>
+</li>
+<li><a href="#6-project-name-and-filtering">6. Project Name and Filtering</a><ul>
+<li><a href="#filtering-message">Filtering message</a></li>
+</ul>
+</li>
+<li><a href="#7-task-data-model">7. Task Data Model</a><ul>
+<li><a href="#task-statuses">Task statuses</a></li>
+<li><a href="#plan-item-markers">Plan-item markers</a></li>
+<li><a href="#association-invariants">Association invariants</a></li>
+</ul>
+</li>
+<li><a href="#8-checkpoint-semantics">8. Checkpoint Semantics</a><ul>
+<li><a href="#required-checkpoint-content">Required checkpoint content</a></li>
+<li><a href="#projection-versus-history">Projection versus history</a></li>
+<li><a href="#conflict-behavior">Conflict behavior</a></li>
+<li><a href="#completion">Completion</a></li>
+</ul>
+</li>
+<li><a href="#9-concurrency-and-file-safety">9. Concurrency and File Safety</a><ul>
+<li><a href="#lock-policy">Lock policy</a></li>
+<li><a href="#deadlock-avoidance">Deadlock avoidance</a></li>
+</ul>
+</li>
+<li><a href="#10-global-index">10. Global Index</a><ul>
+<li><a href="#rules">Rules</a></li>
+</ul>
+</li>
+<li><a href="#11-configuration">11. Configuration</a></li>
+<li><a href="#12-pi-extension">12. Pi Extension</a><ul>
+<li><a href="#always-enabled-responsibilities">Always-enabled responsibilities</a></li>
+<li><a href="#startup-behavior">Startup behavior</a></li>
+<li><a href="#resume-behavior">Resume behavior</a></li>
+<li><a href="#compact-context-injection">Compact context injection</a></li>
+<li><a href="#oh-my-task-command">/oh-my-task command</a></li>
+<li><a href="#session-association-persistence">Session association persistence</a></li>
+</ul>
+</li>
+<li><a href="#13-pi-manual-mode">13. Pi Manual Mode</a></li>
+<li><a href="#14-pi-auto-mode">14. Pi Auto Mode</a><ul>
+<li><a href="#model-callable-tool">Model-callable tool</a></li>
+<li><a href="#lifecycle-hooks">Lifecycle hooks</a></li>
+<li><a href="#meaningful-work-detection">Meaningful-work detection</a></li>
+</ul>
+</li>
+<li><a href="#15-new-task-flow">15. New Task Flow</a><ul>
+<li><a href="#existing-plan-import">Existing plan import</a></li>
+</ul>
+</li>
+<li><a href="#16-session-based-initialization-pi-only-in-v1">16. Session-Based Initialization (Pi Only in v1)</a><ul>
+<li><a href="#filters">Filters</a></li>
+<li><a href="#flow">Flow</a></li>
+</ul>
+</li>
+<li><a href="#17-oh-my-task-cli">17. oh-my-task-cli</a><ul>
+<li><a href="#cli-output">CLI output</a></li>
+</ul>
+</li>
+<li><a href="#18-shared-agent-skill">18. Shared Agent Skill</a></li>
+<li><a href="#19-privacy-and-security">19. Privacy and Security</a></li>
+<li><a href="#20-suggested-repository-structure">20. Suggested Repository Structure</a></li>
+<li><a href="#21-implementation-plan">21. Implementation Plan</a><ul>
+<li><a href="#phase-1-foundation-and-schemas">Phase 1 — Foundation and schemas</a></li>
+<li><a href="#phase-2-safe-task-store">Phase 2 — Safe task store</a></li>
+<li><a href="#phase-3-index-and-manual-inbox">Phase 3 — Index and manual inbox</a></li>
+<li><a href="#phase-4-cli">Phase 4 — CLI</a></li>
+<li><a href="#phase-5-pi-extension-manual-lifecycle">Phase 5 — Pi extension: manual lifecycle</a></li>
+<li><a href="#phase-6-pi-session-initialization">Phase 6 — Pi session initialization</a></li>
+<li><a href="#phase-7-pi-automatic-mode">Phase 7 — Pi automatic mode</a></li>
+<li><a href="#phase-8-shared-skill-and-distribution">Phase 8 — Shared skill and distribution</a></li>
+<li><a href="#phase-9-hardening-and-release">Phase 9 — Hardening and release</a></li>
+</ul>
+</li>
+<li><a href="#22-test-strategy">22. Test Strategy</a><ul>
+<li><a href="#unit-tests">Unit tests</a></li>
+<li><a href="#concurrency-tests">Concurrency tests</a></li>
+<li><a href="#pi-integration-tests">Pi integration tests</a></li>
+<li><a href="#acceptance-scenarios">Acceptance scenarios</a></li>
+</ul>
+</li>
+<li><a href="#23-v2-roadmap-todo">23. v2 Roadmap / TODO</a></li>
+<li><a href="#24-final-agreed-product-rules">24. Final Agreed Product Rules</a></li>
+</ul>
+</div>
+</nav>
+      <div class="sidebar-meta">Source: <code>OH-MY-TASK.md</code><br>Use Review mode to keep browser-local revision notes.</div>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">Final design · implementation plan</div>
+        <h1>Durable task continuity for coding agents.</h1>
+        <p>A reviewable specification for agent-independent plans, checkpoints, session handoffs, safe concurrent writes, and a portable CLI.</p>
+        <div class="chips">
+          <span class="chip">Pi extension</span><span class="chip">oh-my-task-cli</span><span class="chip">Agent Skills</span><span class="chip">Markdown-first</span><span class="chip">Concurrent-safe</span>
+        </div>
+      </section>
+      <article id="design"><h1 id="oh-my-task-final-design-and-implementation-plan">Oh My Task — Final Design and Implementation Plan<a class="headerlink" href="#oh-my-task-final-design-and-implementation-plan" title="Permanent link">#</a></h1>
+<h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link">#</a></h2>
+<p>Oh My Task is a user-wide task continuity system for coding agents. It keeps durable, agent-independent implementation plans and progress summaries outside individual chat sessions, while retaining session references for optional native resumption.</p>
+<p>The first release consists of:</p>
+<ol>
+<li>A <strong>Pi extension</strong> for startup/resume UI, repository filtering, Pi session integration, and automatic checkpoint support.</li>
+<li>A portable <strong><code>oh-my-task-cli</code></strong> package that owns storage, validation, locking, indexing, and task mutations.</li>
+<li>An <strong>Agent Skills-compatible <code>oh-my-task</code> skill</strong> for Pi manual mode and other compatible coding agents, including Claude Code, Codex CLI, Kimi CLI, and OpenCode.</li>
+</ol>
+<p>Task files—not chat sessions—are the source of truth for cross-agent continuity.</p>
+<hr>
+<h2 id="2-goals">2. Goals<a class="headerlink" href="#2-goals" title="Permanent link">#</a></h2>
+<ul>
+<li>Maintain a user-wide index of coding tasks.</li>
+<li>Keep one dedicated Markdown file per task.</li>
+<li>Resume work either through a compatible Pi session or by loading compact task context into a new/current session.</li>
+<li>Filter task discovery to the current repository or selected working directory.</li>
+<li>Track implementation-plan progress, edited files, decisions, unresolved issues, and blockers.</li>
+<li>Support manual and automatic checkpoint modes in Pi.</li>
+<li>Permit transparent human editing without requiring an opaque database.</li>
+<li>Safely serialize concurrent writes from multiple agent sessions.</li>
+<li>Import task context from selected Pi sessions in v1.</li>
+<li>Keep the durable format agent-independent.</li>
+</ul>
+<h2 id="3-non-goals-for-v1">3. Non-goals for v1<a class="headerlink" href="#3-non-goals-for-v1" title="Permanent link">#</a></h2>
+<ul>
+<li>Parsing or natively resuming Claude Code, Codex CLI, Kimi CLI, or OpenCode session histories.</li>
+<li>Treating session transcripts as the durable source of truth.</li>
+<li>Synchronizing a task with an imported plan file after the initial import.</li>
+<li>Copying full transcripts or raw tool output into task files.</li>
+<li>Encrypting task data at rest.</li>
+<li>Multi-repository tasks.</li>
+<li>Fully transactional updates across both a task file and the derived index. The index is recoverable and eventually consistent.</li>
+</ul>
+<hr>
+<h2 id="4-terminology">4. Terminology<a class="headerlink" href="#4-terminology" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Task:</strong> A durable unit of work with an objective, implementation plan, current state, and checkpoint history.</li>
+<li><strong>Checkpoint:</strong> An accepted progress update associated with one or more plan items.</li>
+<li><strong>Current-state projection:</strong> The compact task summary derived from the plan and accepted checkpoints.</li>
+<li><strong>Session reference:</strong> Agent name, session ID, working directory, and timestamps retained for traceability or native resumption.</li>
+<li><strong>Context resume:</strong> Continue in the current/new session by injecting compact task context rather than loading an old transcript.</li>
+<li><strong>Project name:</strong> A user-approved name used to associate and filter tasks. The current folder name is offered as the default.</li>
+</ul>
+<hr>
+<h2 id="5-storage-layout">5. Storage Layout<a class="headerlink" href="#5-storage-layout" title="Permanent link">#</a></h2>
+<p>Default root:</p>
+<pre><code class="language-text">~/.oh-my-task/
+├── oh-my-task.md
+├── config.json
+├── tasks/
+│   └── &lt;task-id&gt;.md
+├── locks/
+└── recovery/
+</code></pre>
+<p>The environment variable <code>OH_MY_TASK_HOME</code> overrides the root.</p>
+<h3 id="responsibilities">Responsibilities<a class="headerlink" href="#responsibilities" title="Permanent link">#</a></h3>
+<ul>
+<li><code>oh-my-task.md</code>: Human-readable global index and manual initialization inbox.</li>
+<li><code>config.json</code>: User-wide behavior and safety configuration.</li>
+<li><code>tasks/*.md</code>: Authoritative task records.</li>
+<li><code>locks/</code>: Short-lived per-task and index lock files/directories.</li>
+<li><code>recovery/</code>: Recovery copies produced when a write cannot be safely completed.</li>
+</ul>
+<p>All durable text files use UTF-8 and normalized LF line endings when written by the CLI.</p>
+<hr>
+<h2 id="6-project-name-and-filtering">6. Project Name and Filtering<a class="headerlink" href="#6-project-name-and-filtering" title="Permanent link">#</a></h2>
+<p>Use the current working directory&rsquo;s folder name as the only automatic project-name suggestion. Do not inspect Git metadata, remotes, parent repositories, or neighboring folders.</p>
+<p>When task management starts:</p>
+<ol>
+<li>Read the basename of Pi&rsquo;s <code>ctx.cwd</code>.</li>
+<li>Offer that folder name to the user for approval.</li>
+<li>Let the user enter a different project name instead.</li>
+<li>Use the approved name to associate and filter tasks.</li>
+</ol>
+<h3 id="filtering-message">Filtering message<a class="headerlink" href="#filtering-message" title="Permanent link">#</a></h3>
+<p>Whenever tasks are filtered, Pi must show a fixed, explicit hint such as:</p>
+<blockquote>
+<p>Showing incomplete tasks associated with <code>&lt;project&gt;</code>. Other user-wide tasks are hidden by the current-project filter.</p>
+</blockquote>
+<p>Incomplete means <code>planned</code>, <code>in-progress</code>, or <code>blocked</code>.</p>
+<hr>
+<h2 id="7-task-data-model">7. Task Data Model<a class="headerlink" href="#7-task-data-model" title="Permanent link">#</a></h2>
+<p>Each task file combines structured YAML frontmatter with readable Markdown.</p>
+<pre><code class="language-markdown">---
+schemaVersion: 1
+id: omt-20260327-auth-refactor
+title: Refactor authentication
+status: in-progress
+revision: 7
+createdAt: 2026-03-25T09:00:00Z
+updatedAt: 2026-03-27T10:30:00Z
+project:
+  name: my-app
+activePlanItem: replace-token-validation
+progressSummary: New validator implemented; integration tests remain.
+nextAction: Update middleware and run authentication tests.
+latestSession:
+  agent: pi
+  sessionId: 00000000-0000-0000-0000-000000000000
+  cwd: /work/my-app
+  updatedAt: 2026-03-27T10:30:00Z
+sourcePlan:
+  path: /work/my-app/PLAN.md
+  importedAt: 2026-03-25T09:05:00Z
+---
+
+# Refactor authentication
+
+## Objective
+
+...
+
+## Constraints
+
+...
+
+## Plan
+
+- [x] **inspect-legacy-paths** — Identify legacy authentication paths
+- [&gt;] **replace-token-validation** — Replace token validation
+- [ ] **update-middleware** — Update middleware
+- [ ] **integration-tests** — Run integration tests
+
+## Current State
+
+### Progress
+...
+
+### Next Action
+...
+
+### Decisions
+- ...
+
+### Blockers and Unresolved Issues
+- ...
+
+### Relevant Files
+- `src/auth/validator.ts` — edited; new validator
+
+## Sessions
+
+- Pi — `&lt;session-id&gt;` — `&lt;cwd&gt;` — last used `&lt;timestamp&gt;`
+
+## Checkpoint History
+
+### Checkpoint 7 — 2026-03-27T10:30:00Z
+
+- **Plan item:** `replace-token-validation`
+- **Status:** in progress
+- **Progress:** ...
+- **Files:** ...
+- **Decisions:** ...
+- **Blockers:** ...
+- **Agent/session:** Pi / `&lt;session-id&gt;`
+</code></pre>
+<h3 id="task-statuses">Task statuses<a class="headerlink" href="#task-statuses" title="Permanent link">#</a></h3>
+<ul>
+<li><code>planned</code></li>
+<li><code>in-progress</code></li>
+<li><code>blocked</code></li>
+<li><code>completed</code></li>
+<li><code>archived</code></li>
+</ul>
+<h3 id="plan-item-markers">Plan-item markers<a class="headerlink" href="#plan-item-markers" title="Permanent link">#</a></h3>
+<ul>
+<li><code>[ ]</code> not started</li>
+<li><code>[&gt;]</code> in progress</li>
+<li><code>[x]</code> completed</li>
+<li><code>[!]</code> blocked</li>
+</ul>
+<h3 id="association-invariants">Association invariants<a class="headerlink" href="#association-invariants" title="Permanent link">#</a></h3>
+<ul>
+<li>One session is associated with at most one task.</li>
+<li>One task may have many sessions and agents.</li>
+<li>Only one task is active in a given session.</li>
+<li>Switching a session to another task is explicit.</li>
+<li>Session references are optional for task continuity; the task file is sufficient.</li>
+</ul>
+<hr>
+<h2 id="8-checkpoint-semantics">8. Checkpoint Semantics<a class="headerlink" href="#8-checkpoint-semantics" title="Permanent link">#</a></h2>
+<p>A checkpoint updates both a compact projection and append-only history.</p>
+<h3 id="required-checkpoint-content">Required checkpoint content<a class="headerlink" href="#required-checkpoint-content" title="Permanent link">#</a></h3>
+<ul>
+<li>Plan item(s) affected.</li>
+<li>Completed plan items.</li>
+<li>Progress for active plan items.</li>
+<li>Edited/relevant files and their role.</li>
+<li>Final decisions made since the prior checkpoint.</li>
+<li>Current status.</li>
+<li>Unresolved issues and blockers for ongoing items.</li>
+<li>Next actionable step.</li>
+<li>Agent name and session ID when available.</li>
+</ul>
+<h3 id="projection-versus-history">Projection versus history<a class="headerlink" href="#projection-versus-history" title="Permanent link">#</a></h3>
+<ul>
+<li>Plan statuses and <code>Current State</code> are updated in place.</li>
+<li>Every accepted checkpoint is appended under <code>Checkpoint History</code>.</li>
+<li>The frontmatter projection is updated for fast listing and index generation.</li>
+<li>The global index never contains full checkpoint history.</li>
+</ul>
+<h3 id="conflict-behavior">Conflict behavior<a class="headerlink" href="#conflict-behavior" title="Permanent link">#</a></h3>
+<p>Every proposed mutation includes the revision observed by the caller. After acquiring the lock, the CLI re-reads the task:</p>
+<ul>
+<li>If the revision still matches, apply the mutation.</li>
+<li>If it changed, return a structured stale-revision conflict.</li>
+<li>The agent/user must reload and merge against the latest task.</li>
+<li>Never silently overwrite incompatible plan/status changes.</li>
+<li>If a failure occurs during replacement, preserve recovery material in <code>recovery/</code>.</li>
+</ul>
+<h3 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">#</a></h3>
+<p>A task may normally be completed only when no plan item remains incomplete or blocked. A user may force completion with an explicit reason, which is recorded as a final checkpoint.</p>
+<hr>
+<h2 id="9-concurrency-and-file-safety">9. Concurrency and File Safety<a class="headerlink" href="#9-concurrency-and-file-safety" title="Permanent link">#</a></h2>
+<p>v1 supports multiple sessions reading and updating the same task. Mutations are serialized with short-lived locks; tasks are not locked for the lifetime of a session.</p>
+<h3 id="lock-policy">Lock policy<a class="headerlink" href="#lock-policy" title="Permanent link">#</a></h3>
+<ul>
+<li>Use one atomic per-task lock for task mutations.</li>
+<li>Use a separate index lock for index writes/rebuilds.</li>
+<li>Lock metadata includes PID, hostname, agent, session ID, and creation time.</li>
+<li>Retry for a configurable bounded interval when a lock is busy.</li>
+<li>Reclaim a local stale lock only after verifying its PID is dead.</li>
+<li>Otherwise require explicit user confirmation or an explicit force-unlock operation.</li>
+<li>Use temp-file write, flush/close, and atomic replacement.</li>
+<li>Increment <code>revision</code> on every accepted task mutation.</li>
+</ul>
+<h3 id="deadlock-avoidance">Deadlock avoidance<a class="headerlink" href="#deadlock-avoidance" title="Permanent link">#</a></h3>
+<p>Do not hold a task lock while waiting for the index lock. The operation order is:</p>
+<ol>
+<li>Lock, validate, and atomically update the task.</li>
+<li>Release the task lock.</li>
+<li>Snapshot task projections.</li>
+<li>Lock and regenerate the index region.</li>
+<li>Release the index lock.</li>
+</ol>
+<p>A crash between steps 2 and 4 may leave a stale index, but never loses the authoritative task update. Startup and subsequent CLI operations detect and repair this condition.</p>
+<hr>
+<h2 id="10-global-index">10. Global Index<a class="headerlink" href="#10-global-index" title="Permanent link">#</a></h2>
+<p><code>oh-my-task.md</code> is transparent and human-editable. It has a manual inbox and a generated region:</p>
+<pre><code class="language-markdown"># Oh My Task
+
+## Manual Inbox
+
+Users may add task ideas, plans, or initialization notes here.
+
+&lt;!-- OH-MY-TASK:GENERATED:START --&gt;
+## Active Tasks
+
+### Refactor authentication
+
+- Status: In progress
+- Project: my-app
+- Progress: New validator implemented; integration tests remain.
+- Current item: Replace token validation
+- Next: Update middleware and run authentication tests
+- Updated: 2026-03-27 10:30
+- Latest session: pi/00000000-0000-0000-0000-000000000000
+- Task file: `tasks/omt-20260327-auth-refactor.md`
+
+&lt;!-- OH-MY-TASK:GENERATED:END --&gt;
+</code></pre>
+<h3 id="rules">Rules<a class="headerlink" href="#rules" title="Permanent link">#</a></h3>
+<ul>
+<li>The CLI preserves all content outside the generated markers.</li>
+<li>It regenerates only the marked region from authoritative task projections.</li>
+<li>The index displays only the latest session reference for each task.</li>
+<li>Selecting a task shows up to three recent compatible session references.</li>
+<li>Manual-inbox entries can be validated and converted into dedicated tasks after user preview and approval.</li>
+<li>If generated markers are absent, validate the entire document and show a reconciliation preview before modifying it.</li>
+<li>Existing-task edits made only in the index are never silently applied to task files.</li>
+<li>Store enough revision metadata in the generated region (possibly as HTML comments) to detect a stale index without cluttering the visible document.</li>
+</ul>
+<hr>
+<h2 id="11-configuration">11. Configuration<a class="headerlink" href="#11-configuration" title="Permanent link">#</a></h2>
+<p>Proposed <code>config.json</code>:</p>
+<pre><code class="language-json">{
+  &quot;schemaVersion&quot;: 1,
+  &quot;checkpointMode&quot;: &quot;manual&quot;,
+  &quot;startupPrompt&quot;: true,
+  &quot;defaultSessionSearchDays&quot;: 30,
+  &quot;lock&quot;: {
+    &quot;retryMs&quot;: 250,
+    &quot;timeoutMs&quot;: 5000,
+    &quot;staleAfterMs&quot;: 300000
+  },
+  &quot;sessionDisplayLimit&quot;: 3,
+  &quot;ignoredPaths&quot;: [
+    &quot;**/.env*&quot;,
+    &quot;**/*secret*&quot;,
+    &quot;**/*credential*&quot;,
+    &quot;**/.ssh/**&quot;
+  ]
+}
+</code></pre>
+<p><code>checkpointMode</code> is <code>manual</code> or <code>auto</code>. Startup prompting is independently configurable.</p>
+<p>Configuration validation must reject unknown schema versions and report invalid values with actionable messages.</p>
+<hr>
+<h2 id="12-pi-extension">12. Pi Extension<a class="headerlink" href="#12-pi-extension" title="Permanent link">#</a></h2>
+<h3 id="always-enabled-responsibilities">Always-enabled responsibilities<a class="headerlink" href="#always-enabled-responsibilities" title="Permanent link">#</a></h3>
+<p>The extension remains active in both manual and auto modes to provide:</p>
+<ul>
+<li>Current-folder project-name suggestion and user approval.</li>
+<li>Project-filtered startup task discovery.</li>
+<li>New-task/resume chooser.</li>
+<li>Session-to-task association.</li>
+<li>Compact context injection.</li>
+<li><code>/oh-my-task</code> UI and lifecycle commands.</li>
+<li>Pi session search/import initialization.</li>
+<li>Index consistency checks on startup.</li>
+</ul>
+<h3 id="startup-behavior">Startup behavior<a class="headerlink" href="#startup-behavior" title="Permanent link">#</a></h3>
+<p>On <code>session_start</code>:</p>
+<ol>
+<li>Skip dialogs in print and JSON modes.</li>
+<li>Suggest the current folder name and obtain the user&rsquo;s approved project name.</li>
+<li>Check for an existing task association in the Pi session.</li>
+<li>If associated, validate the task and load its compact context automatically.</li>
+<li>Otherwise, when startup prompting is enabled, list relevant incomplete tasks and show the fixed filtering hint.</li>
+<li>Offer:
+   - Create a new task.
+   - Select an incomplete task.
+   - Continue without a task.</li>
+<li>After task selection, show:
+   - Up to three recent resumable Pi sessions.
+   - <strong>Continue in current session from task context.</strong></li>
+<li>Add the current session reference only after association succeeds.</li>
+</ol>
+<p>A resumed Pi session already mapped to a task does not show the chooser again.</p>
+<h3 id="resume-behavior">Resume behavior<a class="headerlink" href="#resume-behavior" title="Permanent link">#</a></h3>
+<ul>
+<li>Selecting a compatible Pi session uses Pi&rsquo;s native session-switch API.</li>
+<li>Context resume stays in the current session and injects the compact task projection.</li>
+<li>If the latest task activity belongs to another agent, show an agent-switch notice and offer context resume only.</li>
+<li>Other-agent session IDs are informational and are never passed to Pi&rsquo;s native resume mechanism.</li>
+</ul>
+<h3 id="compact-context-injection">Compact context injection<a class="headerlink" href="#compact-context-injection" title="Permanent link">#</a></h3>
+<p>Inject only:</p>
+<ul>
+<li>Objective and constraints.</li>
+<li>Current plan and statuses.</li>
+<li>Latest checkpoint relevant to the active item.</li>
+<li>Current decisions and blockers.</li>
+<li>Next action.</li>
+<li>Relevant-file list.</li>
+</ul>
+<p>Older checkpoint history is loaded only on demand.</p>
+<h3 id="oh-my-task-command"><code>/oh-my-task</code> command<a class="headerlink" href="#oh-my-task-command" title="Permanent link">#</a></h3>
+<p>Default invocation displays the same project-filtered information as startup. Proposed subcommands:</p>
+<pre><code class="language-text">/oh-my-task
+/oh-my-task list
+/oh-my-task new
+/oh-my-task resume
+/oh-my-task switch
+/oh-my-task checkpoint
+/oh-my-task complete
+/oh-my-task archive
+/oh-my-task init
+/oh-my-task validate
+/oh-my-task rebuild-index
+/oh-my-task unlock
+</code></pre>
+<p>Interactive operations use Pi&rsquo;s UI APIs. Non-interactive invocations produce concise text or actionable errors without attempting dialogs.</p>
+<h3 id="session-association-persistence">Session association persistence<a class="headerlink" href="#session-association-persistence" title="Permanent link">#</a></h3>
+<p>Record the association in both places:</p>
+<ul>
+<li>Task file session references: durable cross-agent metadata.</li>
+<li>A Pi custom session entry: fast, branch-aware detection when resuming a Pi session.</li>
+</ul>
+<p>The external task file remains authoritative if the two disagree; reconciliation requires confirmation when ambiguity could change the active task.</p>
+<hr>
+<h2 id="13-pi-manual-mode">13. Pi Manual Mode<a class="headerlink" href="#13-pi-manual-mode" title="Permanent link">#</a></h2>
+<p>In manual mode:</p>
+<ul>
+<li>The extension still provides startup, filtering, association, context resume, and <code>/oh-my-task</code> UI.</li>
+<li>Automatic lifecycle checkpoint prompting is disabled.</li>
+<li>The Agent Skill is available as <code>/skill:oh-my-task</code>.</li>
+<li>The skill tells Pi to inspect current task state and call <code>oh-my-task-cli</code> for explicit checkpoint or lifecycle operations.</li>
+<li>Direct Markdown edits are allowed, but the next CLI operation validates schema and revisions before proceeding.</li>
+</ul>
+<hr>
+<h2 id="14-pi-auto-mode">14. Pi Auto Mode<a class="headerlink" href="#14-pi-auto-mode" title="Permanent link">#</a></h2>
+<h3 id="model-callable-tool">Model-callable tool<a class="headerlink" href="#model-callable-tool" title="Permanent link">#</a></h3>
+<p>The extension registers an auto-mode checkpoint tool, for example <code>oh_my_task_checkpoint</code>, with structured fields for:</p>
+<ul>
+<li>Base revision.</li>
+<li>Affected plan-item IDs and status changes.</li>
+<li>Progress summary.</li>
+<li>Edited/relevant files.</li>
+<li>Decisions.</li>
+<li>Blockers/unresolved issues.</li>
+<li>Next action.</li>
+<li>Proposed task status.</li>
+</ul>
+<p>The tool delegates all mutation logic to the same core used by <code>oh-my-task-cli</code>.</p>
+<h3 id="lifecycle-hooks">Lifecycle hooks<a class="headerlink" href="#lifecycle-hooks" title="Permanent link">#</a></h3>
+<ul>
+<li>Track file mutation signals during the agent run.</li>
+<li>At <code>agent_settled</code>, if an active task has meaningful uncheckpointed work, queue one guarded follow-up asking the agent to call the checkpoint tool.</li>
+<li>A reentrancy guard prevents checkpoint loops.</li>
+<li>Clear dirty state only after a successful checkpoint.</li>
+<li>At <code>session_shutdown</code>, flush already-collected non-semantic state and release resources; do not initiate another model call.</li>
+</ul>
+<h3 id="meaningful-work-detection">Meaningful-work detection<a class="headerlink" href="#meaningful-work-detection" title="Permanent link">#</a></h3>
+<p>Trigger when at least one is true:</p>
+<ul>
+<li>Built-in or extension file-write/edit tools changed files.</li>
+<li>Git status/diff indicates repository changes since the last checkpoint.</li>
+<li>Task/plan state changed.</li>
+<li>The agent explicitly identified a durable decision or blocker.</li>
+</ul>
+<p>Pure discussion does not force an automatic checkpoint unless it produced a durable decision/blocker. Non-Git changes made indirectly through arbitrary shell commands may not be mechanically detectable; the agent can still call the tool explicitly.</p>
+<hr>
+<h2 id="15-new-task-flow">15. New Task Flow<a class="headerlink" href="#15-new-task-flow" title="Permanent link">#</a></h2>
+<ol>
+<li>User selects <strong>New task</strong>.</li>
+<li>Ask for title and optional initial objective.</li>
+<li>Ask the user to choose:
+   - Develop the implementation plan collaboratively with the agent.
+   - Import an existing plan file.</li>
+<li>Create a minimal <code>planned</code> task and associate the current session.</li>
+<li>For collaborative planning, inject a prompt directing the agent to clarify scope and develop the plan with the user.</li>
+<li>Save the approved plan as the first checkpoint.</li>
+</ol>
+<h3 id="existing-plan-import">Existing plan import<a class="headerlink" href="#existing-plan-import" title="Permanent link">#</a></h3>
+<ul>
+<li>Read the plan once.</li>
+<li>Normalize it into the task schema.</li>
+<li>Show the proposed objective, constraints, and plan for approval.</li>
+<li>Copy approved content into the dedicated task file.</li>
+<li>Retain the original path and import timestamp as provenance.</li>
+<li>Do not maintain a live link or synchronize later changes.</li>
+</ul>
+<hr>
+<h2 id="16-session-based-initialization-pi-only-in-v1">16. Session-Based Initialization (Pi Only in v1)<a class="headerlink" href="#16-session-based-initialization-pi-only-in-v1" title="Permanent link">#</a></h2>
+<p>When <code>/oh-my-task init</code> finds no task data, ask whether to search Pi session history.</p>
+<h3 id="filters">Filters<a class="headerlink" href="#filters" title="Permanent link">#</a></h3>
+<p>Users may narrow candidates with any combination of:</p>
+<ul>
+<li>Keywords.</li>
+<li>Date/day range.</li>
+<li>Repository or directory path.</li>
+</ul>
+<p>Use Pi&rsquo;s structured session APIs (<code>SessionManager.list</code>/<code>listAll</code>) rather than filesystem-name assumptions where possible.</p>
+<h3 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">#</a></h3>
+<ol>
+<li>Search metadata first; do not immediately read full transcripts.</li>
+<li>Display candidate session name/ID, date, working directory, and a brief safe preview.</li>
+<li>Let the user select sessions.</li>
+<li>Let the user group selected sessions into one task or choose one task per session.</li>
+<li>Analyze only approved sessions.</li>
+<li>Propose task titles, objectives, plans, decisions, progress, blockers, next steps, and session references.</li>
+<li>Show a preview.</li>
+<li>Create task/index files only after explicit approval.</li>
+<li>Read the resulting index and display initialized task information.</li>
+</ol>
+<p>Raw transcripts and full tool output are not copied into task files.</p>
+<hr>
+<h2 id="17-oh-my-task-cli">17. <code>oh-my-task-cli</code><a class="headerlink" href="#17-oh-my-task-cli" title="Permanent link">#</a></h2>
+<p>The npm package and shared core are named <strong><code>oh-my-task-cli</code></strong>. The Pi extension imports its core API; skills invoke its executable.</p>
+<p>Proposed CLI surface:</p>
+<pre><code class="language-text">oh-my-task-cli list [--project NAME] [--status STATUS]
+oh-my-task-cli show &lt;task-id&gt; [--compact]
+oh-my-task-cli new [--title TITLE] [--objective TEXT] [--plan FILE]
+oh-my-task-cli associate &lt;task-id&gt; --agent NAME --session ID --cwd PATH
+oh-my-task-cli checkpoint &lt;task-id&gt; --input FILE|--json JSON
+                                    --base-revision N
+oh-my-task-cli switch &lt;task-id&gt; --agent NAME --session ID
+oh-my-task-cli complete &lt;task-id&gt; [--force --reason TEXT]
+oh-my-task-cli archive &lt;task-id&gt;
+oh-my-task-cli init --agent pi [--keywords TEXT] [--days N] [--repo PATH]
+oh-my-task-cli validate [&lt;task-id&gt;]
+oh-my-task-cli rebuild-index
+oh-my-task-cli import-inbox
+oh-my-task-cli unlock &lt;task-id|index&gt; [--force]
+</code></pre>
+<h3 id="cli-output">CLI output<a class="headerlink" href="#cli-output" title="Permanent link">#</a></h3>
+<ul>
+<li>Human-readable output by default.</li>
+<li><code>--json</code> for extension/skill integration.</li>
+<li>Stable error codes for lock busy, stale revision, validation failure, task not found, project mismatch, and unsupported session agent.</li>
+<li>Mutating commands return the new revision and updated compact projection.</li>
+</ul>
+<hr>
+<h2 id="18-shared-agent-skill">18. Shared Agent Skill<a class="headerlink" href="#18-shared-agent-skill" title="Permanent link">#</a></h2>
+<p>Canonical package path:</p>
+<pre><code class="language-text">skills/oh-my-task/SKILL.md
+</code></pre>
+<p>Use Agent Skills-compatible frontmatter:</p>
+<pre><code class="language-yaml">---
+name: oh-my-task
+description: Manage durable coding tasks, implementation plans, checkpoints, blockers, and cross-session context with oh-my-task-cli. Use when starting, resuming, checkpointing, switching, completing, or importing a task.
+---
+</code></pre>
+<p>The skill must instruct the agent to:</p>
+<ol>
+<li>Locate <code>OH_MY_TASK_HOME</code> or the default data root.</li>
+<li>Use <code>oh-my-task-cli</code> instead of independently rewriting structured task sections whenever possible.</li>
+<li>Identify itself and provide its current session ID when the harness exposes one.</li>
+<li>Use context resume when a session belongs to another agent.</li>
+<li>Read compact context first and load history only when needed.</li>
+<li>Re-read and merge after stale-revision errors.</li>
+<li>Never force-unlock or force-complete without user approval.</li>
+<li>Avoid secrets and ignored paths in summaries.</li>
+</ol>
+<p>The same canonical skill is distributed/documented for Pi, Claude Code, Codex CLI, Kimi CLI, OpenCode, and other Agent Skills-compatible tools. Agent-specific installation helpers may copy or link it into each harness&rsquo;s supported skill directory. Pi exposes it as <code>/skill:oh-my-task</code>.</p>
+<p>Other agents receive manual task management in v1; Pi alone receives extension lifecycle automation and native session-history import.</p>
+<hr>
+<h2 id="19-privacy-and-security">19. Privacy and Security<a class="headerlink" href="#19-privacy-and-security" title="Permanent link">#</a></h2>
+<ul>
+<li>Store curated summaries, never complete transcripts.</li>
+<li>Do not copy raw tool output.</li>
+<li>Exclude obvious credentials, environment values, secret-file contents, and configured ignored paths.</li>
+<li>Preview session-import summaries before writing.</li>
+<li>Treat task/index files as plaintext user-private data.</li>
+<li>Do not claim encryption or secret-manager guarantees.</li>
+<li>Validate paths before reading imported plans or session files.</li>
+<li>Do not follow untrusted index content as executable instructions.</li>
+<li>Quote/escape all CLI arguments and avoid shell interpolation in the extension.</li>
+<li>Locks and task files must be created with user-only permissions where supported.</li>
+</ul>
+<hr>
+<h2 id="20-suggested-repository-structure">20. Suggested Repository Structure<a class="headerlink" href="#20-suggested-repository-structure" title="Permanent link">#</a></h2>
+<pre><code class="language-text">.
+├── package.json
+├── tsconfig.json
+├── OH-MY-TASK.md
+├── packages/
+│   ├── core/
+│   │   └── src/
+│   │       ├── config.ts
+│   │       ├── paths.ts
+│   │       ├── project-identity.ts
+│   │       ├── schema.ts
+│   │       ├── markdown.ts
+│   │       ├── task-store.ts
+│   │       ├── lock.ts
+│   │       ├── checkpoint.ts
+│   │       ├── index-store.ts
+│   │       ├── session-reference.ts
+│   │       └── privacy.ts
+│   ├── cli/
+│   │   └── src/
+│   │       ├── main.ts
+│   │       └── commands/
+│   └── pi-extension/
+│       └── src/
+│           ├── index.ts
+│           ├── startup.ts
+│           ├── commands.ts
+│           ├── checkpoint-tool.ts
+│           ├── auto-checkpoint.ts
+│           ├── session-import.ts
+│           └── context.ts
+├── skills/
+│   └── oh-my-task/
+│       └── SKILL.md
+├── scripts/
+│   └── install-skills.*
+└── tests/
+    ├── fixtures/
+    ├── core/
+    ├── cli/
+    └── pi-extension/
+</code></pre>
+<p>The published Pi package manifest should expose the extension and skill. Runtime dependencies belong in <code>dependencies</code>; Pi-provided packages belong in <code>peerDependencies</code> as required by Pi package conventions.</p>
+<hr>
+<h2 id="21-implementation-plan">21. Implementation Plan<a class="headerlink" href="#21-implementation-plan" title="Permanent link">#</a></h2>
+<h3 id="phase-1-foundation-and-schemas">Phase 1 — Foundation and schemas<a class="headerlink" href="#phase-1-foundation-and-schemas" title="Permanent link">#</a></h3>
+<ul>
+<li>Create TypeScript workspace/package structure.</li>
+<li>Define config, task frontmatter, plan item, checkpoint, project-name, and session-reference types.</li>
+<li>Select and configure Markdown/YAML parsing that preserves human-readable sections.</li>
+<li>Implement path resolution and <code>OH_MY_TASK_HOME</code> override.</li>
+<li>Implement task ID/slug generation.</li>
+<li>Add schema-version validation and migration interface.</li>
+</ul>
+<p><strong>Exit criteria:</strong> A valid task fixture round-trips without semantic data loss, and invalid fixtures produce actionable diagnostics.</p>
+<h3 id="phase-2-safe-task-store">Phase 2 — Safe task store<a class="headerlink" href="#phase-2-safe-task-store" title="Permanent link">#</a></h3>
+<ul>
+<li>Implement atomic per-task locks and lock metadata.</li>
+<li>Implement stale-lock detection and explicit recovery.</li>
+<li>Implement atomic file replacement and recovery copies.</li>
+<li>Implement revision checks.</li>
+<li>Implement create, read, update, checkpoint, complete, archive, and session-association operations.</li>
+<li>Implement compact current-state projection.</li>
+</ul>
+<p><strong>Exit criteria:</strong> Concurrent mutation tests serialize writes; stale revisions cannot overwrite newer state; interrupted writes preserve the previous valid task.</p>
+<h3 id="phase-3-index-and-manual-inbox">Phase 3 — Index and manual inbox<a class="headerlink" href="#phase-3-index-and-manual-inbox" title="Permanent link">#</a></h3>
+<ul>
+<li>Implement generated-region parsing and replacement.</li>
+<li>Preserve all content outside markers byte-for-byte where practical.</li>
+<li>Generate active/completed task projections with latest session only.</li>
+<li>Add revision metadata for stale-index detection.</li>
+<li>Implement index validation and rebuild.</li>
+<li>Implement manual-inbox parsing, validation, preview, and conversion.</li>
+<li>Handle missing markers through a no-write reconciliation preview.</li>
+</ul>
+<p><strong>Exit criteria:</strong> Index rebuilding is deterministic, preserves manual content, and recovers after a simulated crash between task and index writes.</p>
+<h3 id="phase-4-cli">Phase 4 — CLI<a class="headerlink" href="#phase-4-cli" title="Permanent link">#</a></h3>
+<ul>
+<li>Implement the agreed command surface.</li>
+<li>Add human-readable and JSON output modes.</li>
+<li>Define stable exit/error codes.</li>
+<li>Add config initialization and validation.</li>
+<li>Add project filtering and fixed filtering message data.</li>
+<li>Add plan-file copy-and-normalize import.</li>
+</ul>
+<p><strong>Exit criteria:</strong> All task lifecycle operations work without Pi and are scriptable through JSON output.</p>
+<h3 id="phase-5-pi-extension-manual-lifecycle">Phase 5 — Pi extension: manual lifecycle<a class="headerlink" href="#phase-5-pi-extension-manual-lifecycle" title="Permanent link">#</a></h3>
+<ul>
+<li>Package the extension according to Pi package conventions.</li>
+<li>Suggest the basename of <code>ctx.cwd</code> and ask the user to approve or replace the project name.</li>
+<li>Implement <code>session_start</code> association restoration and startup chooser.</li>
+<li>Use Pi custom entries for branch-aware session association metadata.</li>
+<li>Implement <code>/oh-my-task</code> and subcommands.</li>
+<li>Implement compact context injection.</li>
+<li>Implement native Pi session switching with replacement-session-safe APIs.</li>
+<li>Guard UI behavior by <code>ctx.mode</code>/<code>ctx.hasUI</code>.</li>
+</ul>
+<p><strong>Exit criteria:</strong> A user can create, associate, context-resume, native-resume, switch, checkpoint manually, and complete a task from Pi.</p>
+<h3 id="phase-6-pi-session-initialization">Phase 6 — Pi session initialization<a class="headerlink" href="#phase-6-pi-session-initialization" title="Permanent link">#</a></h3>
+<ul>
+<li>List/search Pi sessions through supported session APIs.</li>
+<li>Filter by keyword, days, and repo path.</li>
+<li>Build safe metadata previews.</li>
+<li>Support selected-session grouping.</li>
+<li>Generate proposed task summaries/plans using the current Pi model or current agent workflow.</li>
+<li>Require preview approval before writing.</li>
+<li>Add privacy filtering and ignored-path handling.</li>
+</ul>
+<p><strong>Exit criteria:</strong> An empty installation can initialize approved tasks from selected Pi sessions without copying raw transcripts.</p>
+<h3 id="phase-7-pi-automatic-mode">Phase 7 — Pi automatic mode<a class="headerlink" href="#phase-7-pi-automatic-mode" title="Permanent link">#</a></h3>
+<ul>
+<li>Register the structured checkpoint tool only when appropriate for auto mode.</li>
+<li>Track file mutations and repository changes.</li>
+<li>Implement guarded <code>agent_settled</code> follow-up behavior.</li>
+<li>Prevent recursive checkpoint loops.</li>
+<li>Flush non-semantic state and clean up on <code>session_shutdown</code>.</li>
+<li>Add status notifications for dirty, checkpointing, conflict, and success states.</li>
+</ul>
+<p><strong>Exit criteria:</strong> Meaningful work produces one checkpoint, pure idle/discussion does not create noise, stale revisions request a merge, and shutdown never starts an unsafe model call.</p>
+<h3 id="phase-8-shared-skill-and-distribution">Phase 8 — Shared skill and distribution<a class="headerlink" href="#phase-8-shared-skill-and-distribution" title="Permanent link">#</a></h3>
+<ul>
+<li>Write the canonical Agent Skills-compatible <code>SKILL.md</code>.</li>
+<li>Add instructions for Pi manual mode and supported external harnesses.</li>
+<li>Add installation helpers/documentation without duplicating skill logic.</li>
+<li>Publish/package <code>oh-my-task-cli</code>, Pi extension, and skill together where practical.</li>
+</ul>
+<p><strong>Exit criteria:</strong> Pi manual mode and at least one non-Pi harness can manage the same task through <code>oh-my-task-cli</code> and context resume.</p>
+<h3 id="phase-9-hardening-and-release">Phase 9 — Hardening and release<a class="headerlink" href="#phase-9-hardening-and-release" title="Permanent link">#</a></h3>
+<ul>
+<li>Test Windows, macOS, and Linux path/atomic-write behavior.</li>
+<li>Test current-folder name suggestions, user-approved replacements, and same-name project warnings.</li>
+<li>Test malformed Markdown, manual edits, missing markers, stale locks, dead PIDs, and recovery files.</li>
+<li>Test Pi new/resume/fork/reload/shutdown lifecycles.</li>
+<li>Document plaintext-data and concurrency behavior.</li>
+<li>Add migration and backup guidance.</li>
+</ul>
+<p><strong>Exit criteria:</strong> v1 acceptance scenarios pass and data remains recoverable under forced interruption tests.</p>
+<hr>
+<h2 id="22-test-strategy">22. Test Strategy<a class="headerlink" href="#22-test-strategy" title="Permanent link">#</a></h2>
+<h3 id="unit-tests">Unit tests<a class="headerlink" href="#unit-tests" title="Permanent link">#</a></h3>
+<ul>
+<li>Schema validation and version rejection.</li>
+<li>Markdown/frontmatter parsing and rendering.</li>
+<li>Folder-name extraction and project-name validation.</li>
+<li>Revision conflict detection.</li>
+<li>Lock acquisition, timeout, and stale-owner checks.</li>
+<li>Generated-region replacement.</li>
+<li>Compact-context construction.</li>
+<li>Privacy/path filtering.</li>
+</ul>
+<h3 id="concurrency-tests">Concurrency tests<a class="headerlink" href="#concurrency-tests" title="Permanent link">#</a></h3>
+<ul>
+<li>Two checkpoint writers for one task.</li>
+<li>Task update racing index rebuild.</li>
+<li>Process termination while holding a lock.</li>
+<li>Process termination between temp write and replacement.</li>
+<li>Stale base revision after lock acquisition.</li>
+</ul>
+<h3 id="pi-integration-tests">Pi integration tests<a class="headerlink" href="#pi-integration-tests" title="Permanent link">#</a></h3>
+<ul>
+<li>Fresh session with relevant tasks.</li>
+<li>Fresh session without tasks.</li>
+<li>Resumed session with an association custom entry.</li>
+<li>Pi-native session switch.</li>
+<li>Cross-agent latest session forcing context resume.</li>
+<li>Auto checkpoint after file edits.</li>
+<li>No checkpoint loop after checkpoint-tool execution.</li>
+<li>Shutdown with and without uncheckpointed changes.</li>
+<li>Print/JSON modes never opening dialogs.</li>
+</ul>
+<h3 id="acceptance-scenarios">Acceptance scenarios<a class="headerlink" href="#acceptance-scenarios" title="Permanent link">#</a></h3>
+<ol>
+<li>Create a task collaboratively and save the approved plan.</li>
+<li>Import an existing plan and verify no live synchronization.</li>
+<li>Resume from one of three recent Pi sessions.</li>
+<li>Continue from compact context in a new Pi session.</li>
+<li>Switch from another agent to Pi using task context only.</li>
+<li>Run two concurrent checkpoints without lost writes.</li>
+<li>Manually add an inbox task and import it after preview.</li>
+<li>Rebuild a stale/deleted index from task files.</li>
+<li>Initialize tasks from filtered Pi sessions.</li>
+<li>Complete a task normally and force-complete one with a recorded reason.</li>
+</ol>
+<hr>
+<h2 id="23-v2-roadmap-todo">23. v2 Roadmap / TODO<a class="headerlink" href="#23-v2-roadmap-todo" title="Permanent link">#</a></h2>
+<ul>
+<li>Add session-history adapters for Claude Code, Codex CLI, Kimi CLI, OpenCode, and other agents.</li>
+<li>Add native session resume adapters only where a harness provides a stable, documented mechanism.</li>
+<li>Improve semantic three-way merging for concurrent plan/status edits.</li>
+<li>Add multi-repository task support.</li>
+<li>Add optional repository-local export/import for team sharing.</li>
+<li>Add optional encrypted or secret-store-backed fields.</li>
+<li>Add richer checkpoint compaction for very long-lived tasks.</li>
+<li>Add optional file watchers for non-Git changes made outside known write tools.</li>
+</ul>
+<hr>
+<h2 id="24-final-agreed-product-rules">24. Final Agreed Product Rules<a class="headerlink" href="#24-final-agreed-product-rules" title="Permanent link">#</a></h2>
+<ol>
+<li>Storage is user-wide and project-filtered at display time.</li>
+<li>The current folder name is the only automatic project suggestion; the user approves it or enters another name.</li>
+<li>Task Markdown files are authoritative; the index is a recoverable projection with a preserved manual inbox.</li>
+<li>Checkpoints update current state and append durable history.</li>
+<li>Concurrent writes are supported through short-lived locks plus revision checks.</li>
+<li>One task may span many sessions and agents, but each session has at most one active task.</li>
+<li>Cross-agent continuation relies on compact task context, not compatible session formats.</li>
+<li>Pi supports native resumption only for compatible Pi sessions.</li>
+<li>The index shows one latest session; task selection shows up to three recent compatible sessions and a context-resume option.</li>
+<li>Manual mode uses the skill and <code>oh-my-task-cli</code>; Pi&rsquo;s extension still owns startup and task-selection UX.</li>
+<li>Auto mode uses Pi lifecycle hooks and a model-callable checkpoint tool.</li>
+<li>Shutdown never initiates a new semantic model call.</li>
+<li>v1 imports Pi session history only; other session adapters are explicit v2 work.</li>
+<li>Imported plans are copied and normalized, not live-linked.</li>
+<li>Session imports and checkpoints store curated summaries, not transcripts, secrets, or raw tool output.</li>
+</ol></article>
+    </main>
+  </div>
+
+  <footer class="footer">Generated from <code>OH-MY-TASK.md</code>. Regenerate after editing the source.</footer>
+
+  <script>
+    const root = document.documentElement;
+    const article = document.getElementById('design');
+    const links = [...document.querySelectorAll('.toc a')];
+    const storagePrefix = 'oh-my-task-review:';
+
+    const preferred = localStorage.getItem(storagePrefix + 'theme') ||
+      (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    root.dataset.theme = preferred;
+    document.getElementById('themeToggle').textContent = preferred === 'dark' ? '☼' : '☾';
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      localStorage.setItem(storagePrefix + 'theme', next);
+      document.getElementById('themeToggle').textContent = next === 'dark' ? '☼' : '☾';
+    });
+
+    const headings = [...article.querySelectorAll('h2[id], h3[id]')];
+    headings.forEach(heading => {
+      const box = document.createElement('div');
+      box.className = 'review-note';
+      box.innerHTML = '<label>Revision note for this section</label><textarea placeholder="Question an assumption, record a decision, or propose a change…"></textarea>';
+      heading.insertAdjacentElement('afterend', box);
+      const textarea = box.querySelector('textarea');
+      textarea.value = localStorage.getItem(storagePrefix + 'note:' + heading.id) || '';
+      textarea.addEventListener('input', () => {
+        const value = textarea.value.trim();
+        if (value) localStorage.setItem(storagePrefix + 'note:' + heading.id, textarea.value);
+        else localStorage.removeItem(storagePrefix + 'note:' + heading.id);
+        refreshNoteCount();
+      });
+    });
+
+    function notes() {
+      return headings.map(h => ({ heading: h.textContent.replace('#', '').trim(), id: h.id, value: localStorage.getItem(storagePrefix + 'note:' + h.id) || '' })).filter(n => n.value.trim());
+    }
+    function refreshNoteCount() {
+      const count = notes().length;
+      const badge = document.getElementById('noteCount');
+      badge.textContent = count;
+      badge.classList.toggle('visible', count > 0);
+    }
+    refreshNoteCount();
+
+    document.getElementById('reviewToggle').addEventListener('click', () => {
+      document.body.classList.toggle('reviewing');
+    });
+    document.getElementById('exportNotes').addEventListener('click', () => {
+      const current = notes();
+      if (!current.length) return alert('No review notes to export.');
+      const text = '# Oh My Task — Review Notes\n\n' + current.map(n => `## ${n.heading}\n\n${n.value.trim()}\n`).join('\n');
+      const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'OH-MY-TASK-REVIEW-NOTES.md';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    const search = document.getElementById('search');
+    search.addEventListener('input', () => {
+      const term = search.value.trim().toLowerCase();
+      links.forEach(link => {
+        const target = document.querySelector(link.getAttribute('href'));
+        const sectionText = target ? collectSectionText(target).toLowerCase() : link.textContent.toLowerCase();
+        link.closest('li').classList.toggle('filtered', !!term && !sectionText.includes(term));
+      });
+    });
+    function collectSectionText(heading) {
+      let text = heading.textContent;
+      let node = heading.nextElementSibling;
+      const level = Number(heading.tagName.slice(1));
+      while (node && (!/^H[1-6]$/.test(node.tagName) || Number(node.tagName.slice(1)) > level)) {
+        text += ' ' + node.textContent;
+        node = node.nextElementSibling;
+      }
+      return text;
+    }
+    document.addEventListener('keydown', event => {
+      if (event.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) {
+        event.preventDefault(); search.focus();
+      }
+    });
+
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(e => e.isIntersecting).sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (!visible) return;
+      links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + visible.target.id));
+    }, { rootMargin: '-12% 0px -76% 0px' });
+    headings.filter(h => h.tagName === 'H2').forEach(h => observer.observe(h));
+
+    addEventListener('scroll', () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      document.getElementById('progress').style.width = (max > 0 ? scrollY / max * 100 : 0) + '%';
+    }, { passive: true });
+
+    document.getElementById('mobileToc').addEventListener('click', () => {
+      const choices = headings.filter(h => h.tagName === 'H2').map((h, i) => `${i + 1}. ${h.textContent.replace('#', '').trim()}`).join('\n');
+      const selected = prompt('Jump to section (enter number):\n\n' + choices);
+      const target = headings.filter(h => h.tagName === 'H2')[Number(selected) - 1];
+      target?.scrollIntoView();
+    });
+  </script>
+</body>
+</html>
