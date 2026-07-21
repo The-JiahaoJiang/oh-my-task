@@ -33,7 +33,7 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
         active = undefined;
       }
     }
-    if (!runtime.config.startupPrompt || !ctx.hasUI || ctx.mode !== "tui") return;
+    if (!runtime.config.startupPrompt || !ctx.hasUI) return;
     const projectName = await chooseProjectName(ctx);
     if (!projectName) return;
     const candidates = await relevantTasks(runtime, projectName);

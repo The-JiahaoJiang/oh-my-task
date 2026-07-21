@@ -20,7 +20,10 @@
     "install-skill": "node scripts/install-skills.mjs"
   },
   "devDependencies": {
+    "@earendil-works/pi-ai": "0.80.7",
+    "@earendil-works/pi-coding-agent": "0.80.7",
     "@types/node": "^24.0.0",
+    "typebox": "^1.1.38",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"
   }
