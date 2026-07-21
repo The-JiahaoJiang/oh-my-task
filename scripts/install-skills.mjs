@@ -12,5 +12,6 @@ const target = requested ? resolve(requested) : join(homedir(), ".agents", "skil
 
 await mkdir(dirname(target), { recursive: true });
 await cp(source, target, { recursive: true, force: true });
-console.log(`Installed Oh My Task skill to ${target}`);
+await cp(join(root, "packages", "core", "dist"), join(target, "runtime"), { recursive: true, force: true });
+console.log(`Installed Oh My Task skill and CLI runtime to ${target}`);
 console.log("Pi discovers ~/.agents/skills automatically. For another harness, pass --path with its documented skill directory.");

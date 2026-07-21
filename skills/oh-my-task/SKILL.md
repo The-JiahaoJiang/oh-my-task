@@ -10,13 +10,17 @@ Use the task Markdown file as the durable source of truth. Sessions are optional
 
 ## Safety Rules
 
-1. Use `oh-my-task-cli` for structured mutations instead of rewriting generated fields by hand.
+1. Use `oh-my-task-cli` for structured mutations instead of rewriting generated fields by hand. If it is not on `PATH`, run `node <skill-directory>/cli.mjs` with the same arguments.
 2. Read the task and note its `revision` before mutation.
 3. Pass that revision as `baseRevision`; after `STALE_REVISION`, reload and merge before retrying.
 4. Never force-unlock or force-complete without explicit user approval.
 5. Never store credentials, environment values, secret-file contents, full transcripts, or raw tool output.
 6. Load compact current context first. Read older checkpoint history only when needed.
 7. If the latest session belongs to another agent, explain that native resume is unavailable and use task-context resume.
+
+## CLI Invocation
+
+Use `oh-my-task-cli` when it is available on `PATH`. Otherwise resolve this skill's directory and substitute `node <skill-directory>/cli.mjs` in every command below. Do not guess the package's installation root.
 
 ## Discover or Resume
 
