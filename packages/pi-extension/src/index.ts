@@ -5,7 +5,7 @@ import { basename, resolve } from "node:path";
 import { importPlanFile, type ImportedPlan, type RelevantFile, type TaskDocument, type TaskStatus } from "oh-my-task-cli";
 import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation, type TaskAssociation } from "./context.js";
 import { chooseProjectName, createRuntime, rebuild, relevantTasks, type Runtime } from "./runtime.js";
-import { filteringHint, parseNewTaskArguments, taskLabel } from "./ui.js";
+import { buildImportedPlanProgressPrompt, filteringHint, parseNewTaskArguments, taskLabel } from "./ui.js";
 import { initializeFromPiSessions } from "./session-import.js";
 import { AutoCheckpointController } from "./auto-checkpoint.js";
 
@@ -67,6 +67,7 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
         const request = parseNewTaskArguments(rest.join(" "));
         const project = await chooseProjectName(ctx, runtime); if (!project) return;
         let imported: ImportedPlan | undefined;
+        let reviewImportedProgress = false;
         if (request.planPath) {
           const path = resolve(ctx.cwd, request.planPath);
           imported = await importPlanFile(path);
@@ -78,9 +79,16 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
             ...imported.plan.slice(0, 8).map((item) => `- [${item.status}] ${item.title}`),
           ].join("\n");
           if (!await ctx.ui.confirm("Import this task plan?", preview)) return;
+          reviewImportedProgress = await ctx.ui.confirm(
+            "Review and update implementation progress?",
+            "If approved, Pi will read the imported plan, identify directly related project files, inspect those files, and update task progress from verified evidence. Unrelated files and sensitive content must not be scanned or copied.",
+          );
         }
         const task = await createTaskInteractively(runtime, ctx, project, request.title, imported);
-        if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
+        if (task) {
+          const activated = await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
+          if (reviewImportedProgress) pi.sendUserMessage(buildImportedPlanProgressPrompt(activated));
+        }
         return;
       }
       if (subcommand === "resume" || subcommand === "switch") {
@@ -174,7 +182,7 @@ async function createTaskInteractively(
 async function activateTask(
   pi: ExtensionAPI, runtime: Runtime, ctx: ExtensionContext, task: TaskDocument,
   setActive: (association: TaskAssociation) => void,
-): Promise<void> {
+): Promise<TaskDocument> {
   const session = { agent: "pi", sessionId: ctx.sessionManager.getSessionId(), cwd: ctx.cwd, updatedAt: new Date().toISOString() };
   const associated = await runtime.tasks.associate(task.metadata.id, task.metadata.revision, session);
   const association = { taskId: associated.metadata.id, revision: associated.metadata.revision, projectName: associated.metadata.project.name };
@@ -182,6 +190,7 @@ async function activateTask(
   await rebuild(runtime); injectContext(pi, associated);
   ctx.ui.setStatus("oh-my-task", `task: ${associated.metadata.title}`);
   ctx.ui.notify(`Loaded task context for ${associated.metadata.title}`, "info");
+  return associated;
 }
 
 async function resumeTask(
@@ -197,7 +206,7 @@ async function resumeTask(
   const contextOption = "Continue in current session from task context";
   const options = [contextOption, ...sessions.map((session) => `Resume Pi session ${session.sessionId}`)];
   const selected = await ctx.ui.select("Resume method", options); if (!selected) return;
-  if (selected === contextOption) return activateTask(pi, runtime, ctx, task, setActive);
+  if (selected === contextOption) { await activateTask(pi, runtime, ctx, task, setActive); return; }
   const sessionId = selected.replace("Resume Pi session ", "");
   const available = await SessionManager.listAll();
   const target = available.find((item) => item.id === sessionId || item.path.includes(sessionId));

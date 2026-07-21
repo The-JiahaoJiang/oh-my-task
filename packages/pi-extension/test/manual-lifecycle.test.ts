@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation } from "../src/context.js";
-import { filteringHint, parseNewTaskArguments, taskLabel } from "../src/ui.js";
+import { buildImportedPlanProgressPrompt, filteringHint, parseNewTaskArguments, taskLabel } from "../src/ui.js";
 
 const task = {
   metadata: {
@@ -40,9 +40,22 @@ test("latest valid branch association wins", () => {
   assert.equal(findAssociation(entries)?.taskId, "two");
 });
 
-test("task labels and filtering hint are explicit", () => {
-  assert.match(taskLabel(task), /Implementation underway/);
+test("task labels explicitly identify tasks, status, and progress", () => {
+  assert.equal(taskLabel(task), "Task: Test task · Status: in-progress · Progress: Implementation underway");
   assert.match(filteringHint("app"), /Other user-wide tasks are hidden/);
+});
+
+test("approved imported-plan review prompt limits inspection and requires evidence", () => {
+  const importedTask = {
+    ...task,
+    metadata: { ...task.metadata, sourcePlan: { path: "/work/app/PLAN.md", importedAt: "2026-03-27T00:00:00Z" } },
+  };
+  const prompt = buildImportedPlanProgressPrompt(importedTask);
+  assert.match(prompt, /user approved/);
+  assert.match(prompt, /directly related project files/);
+  assert.match(prompt, /verified evidence/);
+  assert.match(prompt, /PLAN\.md/);
+  assert.match(prompt, /instead of guessing/);
 });
 
 test("new-task arguments accept @ plan references including spaces", () => {
