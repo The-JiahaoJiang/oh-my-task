@@ -2,6 +2,7 @@ export * from "./atomic.js";
 export * from "./config.js";
 export * from "./errors.js";
 export * from "./id.js";
+export * from "./index-store.js";
 export * from "./lock.js";
 export * from "./markdown.js";
 export * from "./migrations.js";
