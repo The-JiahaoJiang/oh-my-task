@@ -11,7 +11,7 @@ export function taskLabel(task: TaskDocument): string {
 }
 
 export function filteringHint(projectName: string): string {
-  return `Showing incomplete tasks associated with ${projectName}. Other user-wide tasks are hidden by the current-project filter.`;
+  return `Showing incomplete tasks related to ${projectName}. Other tasks are hidden because they are not related to the ${projectName} project.`;
 }
 
 export function buildImportedPlanProgressPrompt(task: TaskDocument): string {

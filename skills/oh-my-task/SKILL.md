@@ -35,7 +35,7 @@ node <skill-directory>/cli.mjs list --project "<approved-project-name>"
 node <skill-directory>/cli.mjs show <task-id> --compact
 ```
 
-Ask the user to approve the current folder name as the project name or provide another name. State that other user-wide tasks are hidden by the project filter.
+Ask the user to approve the current folder name as the project name or provide another name. Explain filtering in plain language: other tasks are hidden because they are not related to the selected project.
 
 To continue from context, read the full selected task only as needed:
 

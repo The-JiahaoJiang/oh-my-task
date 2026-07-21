@@ -42,7 +42,10 @@ test("latest valid branch association wins", () => {
 
 test("task labels explicitly identify tasks, status, and progress", () => {
   assert.equal(taskLabel(task), "Task: Test task · Status: in-progress · Progress: Implementation underway");
-  assert.match(filteringHint("app"), /Other user-wide tasks are hidden/);
+  assert.equal(
+    filteringHint("app"),
+    "Showing incomplete tasks related to app. Other tasks are hidden because they are not related to the app project.",
+  );
 });
 
 test("approved imported-plan review prompt limits inspection and requires evidence", () => {
