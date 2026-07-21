@@ -12,9 +12,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspace=oh-my-task-cli && npm run build --workspace=oh-my-task-pi",
+    "test": "npm run test --workspace=oh-my-task-cli && npm run test --workspace=oh-my-task-pi",
+    "typecheck": "npm run build --workspace=oh-my-task-cli && npm run typecheck --workspace=oh-my-task-pi",
     "validate": "npm run typecheck && npm test && npm run build",
     "test:local": "node scripts/test-with-node-types.mjs",
     "install-skill": "node scripts/install-skills.mjs"
