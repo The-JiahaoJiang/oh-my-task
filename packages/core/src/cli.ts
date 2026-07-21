@@ -10,13 +10,12 @@ import {
   loadConfig,
   saveConfig,
   suggestProjectName,
+  importPlanFile,
   TaskStore,
   ValidationError,
   type CheckpointInput,
   type ManualInboxEntry,
-  type PlanItem,
   type SessionReference,
-  type SourcePlanReference,
 } from "./index.js";
 
 export interface CliIo {
@@ -67,7 +66,7 @@ export async function runCli(argv: string[], io: CliIo = defaultIo()): Promise<n
         if (!title) throw usage("new requires --title TITLE or a positional title");
         const projectName = flagString(flags, "project") ?? suggestProjectName(io.cwd);
         const planPath = flagString(flags, "plan");
-        const imported = planPath ? await importPlan(resolve(io.cwd, planPath)) : undefined;
+        const imported = planPath ? await importPlanFile(resolve(io.cwd, stripAtPrefix(planPath))) : undefined;
         const objective = flagString(flags, "objective") ?? imported?.objective;
         const task = await tasks.create({
           title, projectName,
@@ -144,18 +143,6 @@ export async function runCli(argv: string[], io: CliIo = defaultIo()): Promise<n
   }
 }
 
-async function importPlan(path: string): Promise<{ objective?: string; plan: PlanItem[]; sourcePlan: SourcePlanReference }> {
-  const source = await readFile(path, "utf8");
-  const objective = /^##? Objective\s*\n+([^#\n].*)/mi.exec(source)?.[1]?.trim();
-  const lines = [...source.matchAll(/^- \[[ xX>!]\]\s+(?:\*\*[^*]+\*\*\s+[—-]\s+)?(.+)$/gm)];
-  const plan = lines.map((match, index) => ({
-    id: slug((match[1] ?? `item-${index + 1}`).replace(/\*\*/g, "")),
-    title: (match[1] ?? `Item ${index + 1}`).replace(/\*\*/g, "").trim(),
-    status: match[0].includes("[x]") || match[0].includes("[X]") ? "completed" as const : "not-started" as const,
-  }));
-  return { ...(objective ? { objective } : {}), plan, sourcePlan: { path, importedAt: new Date().toISOString() } };
-}
-
 async function createInboxTask(tasks: TaskStore, entry: ManualInboxEntry, fallbackProject: string) {
   const plan = entry.planLines.map((title, index) => ({ id: `${slug(title)}-${index + 1}`, title, status: "not-started" as const }));
   return tasks.create({
@@ -194,6 +181,7 @@ function sessionFromFlags(flags: Flags, cwd: string): SessionReference {
 function summaryLine(task: { metadata: { id: string; status: string; title: string; project: { name: string } } }): string { return `${task.metadata.id} [${task.metadata.status}] ${task.metadata.title} (${task.metadata.project.name})`; }
 function renderMetadata(value: unknown): string { return JSON.stringify(value, null, 2); }
 function slug(value: string): string { return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "item"; }
+function stripAtPrefix(value: string): string { return value.startsWith("@") ? value.slice(1) : value; }
 function usage(message: string): Error { const error = new Error(`${message}\nRun oh-my-task-cli help for usage.`); (error as Error & { code: string }).code = "USAGE_ERROR"; return error; }
 function errorCode(error: unknown): number { const code = (error as { code?: string }).code; return code === "USAGE_ERROR" ? 64 : code === "VALIDATION_ERROR" ? 65 : code === "TASK_NOT_FOUND" ? 66 : code === "LOCK_BUSY" ? 75 : code === "STALE_REVISION" ? 76 : 1; }
 function defaultIo(): CliIo { return { out: console.log, error: console.error, cwd: process.cwd(), env: process.env }; }

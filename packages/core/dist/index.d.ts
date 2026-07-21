@@ -8,6 +8,7 @@ export * from "./lock.js";
 export * from "./markdown.js";
 export * from "./migrations.js";
 export * from "./paths.js";
+export * from "./plan-import.js";
 export * from "./project.js";
 export * from "./schema.js";
 export * from "./task-body.js";

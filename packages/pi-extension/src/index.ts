@@ -1,10 +1,11 @@
 import { SessionManager, type ExtensionAPI, type ExtensionCommandContext, type ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { StringEnum } from "@earendil-works/pi-ai";
 import { Type } from "typebox";
-import type { RelevantFile, TaskDocument, TaskStatus } from "oh-my-task-cli";
+import { basename, resolve } from "node:path";
+import { importPlanFile, type ImportedPlan, type RelevantFile, type TaskDocument, type TaskStatus } from "oh-my-task-cli";
 import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation, type TaskAssociation } from "./context.js";
 import { chooseProjectName, createRuntime, rebuild, relevantTasks, type Runtime } from "./runtime.js";
-import { filteringHint, taskLabel } from "./ui.js";
+import { filteringHint, parseNewTaskArguments, taskLabel } from "./ui.js";
 import { initializeFromPiSessions } from "./session-import.js";
 import { AutoCheckpointController } from "./auto-checkpoint.js";
 
@@ -38,15 +39,21 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
     if (!projectName) return;
     const candidates = await relevantTasks(runtime, projectName);
     ctx.ui.notify(filteringHint(projectName), "info");
-    const options = ["Create a new task", ...candidates.map(taskLabel), "Continue without a task"];
+    const loadPlanOption = "Load a task plan with @file";
+    const options = ["Create a new task", loadPlanOption, ...candidates.map(taskLabel), "Continue without a task"];
     const choice = await ctx.ui.select("Oh My Task", options);
     if (!choice || choice === "Continue without a task") return;
+    if (choice === loadPlanOption) {
+      ctx.ui.setEditorText("/oh-my-task new --plan @");
+      ctx.ui.notify("Use @ file completion in the editor, select the plan, then submit the command.", "info");
+      return;
+    }
     if (choice === "Create a new task") {
       const task = await createTaskInteractively(runtime, ctx, projectName);
       if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
       return;
     }
-    const task = candidates[options.indexOf(choice) - 1];
+    const task = candidates[options.indexOf(choice) - 2];
     if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
   });
 
@@ -57,8 +64,22 @@ export default function ohMyTaskExtension(pi: ExtensionAPI) {
       const [subcommand = "list", ...rest] = args.trim().split(/\s+/).filter(Boolean);
       if (subcommand === "list") return showTasks(runtime, ctx);
       if (subcommand === "new") {
+        const request = parseNewTaskArguments(rest.join(" "));
         const project = await chooseProjectName(ctx); if (!project) return;
-        const task = await createTaskInteractively(runtime, ctx, project, rest.join(" "));
+        let imported: ImportedPlan | undefined;
+        if (request.planPath) {
+          const path = resolve(ctx.cwd, request.planPath);
+          imported = await importPlanFile(path);
+          const preview = [
+            `Source: ${path}`,
+            `Title: ${request.title || imported.suggestedTitle || basename(path)}`,
+            `Objective: ${imported.objective ?? "Not provided"}`,
+            `Plan items: ${imported.plan.length}`,
+            ...imported.plan.slice(0, 8).map((item) => `- [${item.status}] ${item.title}`),
+          ].join("\n");
+          if (!await ctx.ui.confirm("Import this task plan?", preview)) return;
+        }
+        const task = await createTaskInteractively(runtime, ctx, project, request.title, imported);
         if (task) await activateTask(pi, runtime, ctx, task, (value) => { active = value; });
         return;
       }
@@ -126,12 +147,26 @@ async function showTasks(runtime: Runtime, ctx: ExtensionCommandContext): Promis
   else await ctx.ui.select("Incomplete tasks", tasks.map(taskLabel));
 }
 
-async function createTaskInteractively(runtime: Runtime, ctx: ExtensionContext, projectName: string, suppliedTitle = ""): Promise<TaskDocument | undefined> {
-  const title = suppliedTitle || await ctx.ui.input("Task title"); if (!title) return undefined;
-  const objective = await ctx.ui.input("Initial objective (optional)");
-  const method = await ctx.ui.select("Implementation plan", ["Develop the plan with the agent", "Import an existing plan later with oh-my-task-cli"]);
-  if (!method) return undefined;
-  const task = await runtime.tasks.create({ title, projectName, ...(objective ? { objective } : {}) });
+async function createTaskInteractively(
+  runtime: Runtime,
+  ctx: ExtensionContext,
+  projectName: string,
+  suppliedTitle = "",
+  imported?: ImportedPlan,
+): Promise<TaskDocument | undefined> {
+  const title = suppliedTitle || imported?.suggestedTitle || await ctx.ui.input("Task title", imported?.sourcePlan.path ? basename(imported.sourcePlan.path) : undefined);
+  if (!title) return undefined;
+  const objective = imported?.objective ?? await ctx.ui.input("Initial objective (optional)");
+  if (!imported) {
+    const method = await ctx.ui.select("Implementation plan", ["Develop the plan with the agent", "Import an existing plan with @file or oh-my-task-cli"]);
+    if (!method) return undefined;
+  }
+  const task = await runtime.tasks.create({
+    title,
+    projectName,
+    ...(objective ? { objective } : {}),
+    ...(imported ? { plan: imported.plan, sourcePlan: imported.sourcePlan } : {}),
+  });
   await rebuild(runtime);
   return task;
 }

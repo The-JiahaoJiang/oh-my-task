@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ASSOCIATION_ENTRY, buildCompactContext, extractRecentSessions, findAssociation } from "../src/context.js";
-import { filteringHint, taskLabel } from "../src/ui.js";
+import { filteringHint, parseNewTaskArguments, taskLabel } from "../src/ui.js";
 
 const task = {
   metadata: {
@@ -43,4 +43,11 @@ test("latest valid branch association wins", () => {
 test("task labels and filtering hint are explicit", () => {
   assert.match(taskLabel(task), /Implementation underway/);
   assert.match(filteringHint("app"), /Other user-wide tasks are hidden/);
+});
+
+test("new-task arguments accept @ plan references including spaces", () => {
+  assert.deepEqual(parseNewTaskArguments("--plan @docs/PLAN.md"), { title: "", planPath: "docs/PLAN.md" });
+  assert.deepEqual(parseNewTaskArguments("My task --plan \"@docs/design plan.md\""), {
+    title: "My task", planPath: "docs/design plan.md",
+  });
 });
