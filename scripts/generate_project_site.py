@@ -28,6 +28,8 @@ page = r'''<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Oh My Task provides durable, Markdown-first task continuity for Pi and other coding agents.">
   <meta name="theme-color" content="#0a0d17">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.svg">
   <meta property="og:title" content="Oh My Task">
   <meta property="og:description" content="Plans survive sessions. Context survives agents.">
   <meta property="og:type" content="website">
@@ -291,6 +293,11 @@ architecture_source = ROOT / "OH-MY-TASK.html"
 if not architecture_source.exists():
     raise SystemExit("OH-MY-TASK.html is missing; run scripts/generate_design_html.py first")
 shutil.copyfile(architecture_source, output / "OH-MY-TASK.html")
+favicon_source = ROOT / "site-assets" / "favicon.svg"
+if not favicon_source.exists():
+    raise SystemExit("site-assets/favicon.svg is missing")
+shutil.copyfile(favicon_source, output / "favicon.svg")
 (output / ".nojekyll").write_text("", encoding="utf-8")
 print(f"Generated {output / 'index.html'}")
 print(f"Published {output / 'OH-MY-TASK.html'}")
+print(f"Published {output / 'favicon.svg'}")

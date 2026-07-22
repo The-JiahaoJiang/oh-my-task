@@ -7,6 +7,7 @@ on:
       - ".github/workflows/pages.yml"
       - "scripts/generate_project_site.py"
       - "scripts/check_project_site.py"
+      - "site-assets/**"
       - "README.md"
       - "OH-MY-TASK.md"
       - "OH-MY-TASK.html"

@@ -11,6 +11,7 @@ args = parser.parse_args()
 site = Path(args.site)
 index = site / "index.html"
 architecture = site / "OH-MY-TASK.html"
+favicon = site / "favicon.svg"
 source = index.read_text(encoding="utf-8")
 architecture_source = architecture.read_text(encoding="utf-8")
 
@@ -30,15 +31,20 @@ required = [
     "--terminal-footer-bg: #d4f0ec",
     'href="#terminal-tabs"',
     'href="OH-MY-TASK.html"',
+    'rel="icon" href="favicon.svg"',
 ]
 for value in required:
     if value not in source:
         raise SystemExit(f"Missing required site content: {value}")
 if "oh-my-task-cli" in source:
     raise SystemExit("Internal CLI name must not be exposed on the user-facing site")
-for value in ["System Architecture", "Implementation Details and Code Map", "packages/core/src/task-store.ts"]:
+for value in ["System Architecture", "Implementation Details and Code Map", "packages/core/src/task-store.ts", 'rel="icon" href="favicon.svg"']:
     if value not in architecture_source:
         raise SystemExit(f"Architecture page is missing required content: {value}")
+favicon_source = favicon.read_text(encoding="utf-8")
+for value in ["<svg", "linearGradient", "Oh My Task"]:
+    if value not in favicon_source:
+        raise SystemExit(f"Favicon is missing required content: {value}")
 
 class Links(HTMLParser):
     def __init__(self):
@@ -60,3 +66,4 @@ if missing:
     raise SystemExit(f"Broken internal links: {', '.join(missing)}")
 print(f"Validated {index} ({len(source):,} bytes, {len(links.fragments)} internal links)")
 print(f"Validated {architecture} ({len(architecture_source):,} bytes)")
+print(f"Validated {favicon} ({len(favicon_source):,} bytes)")

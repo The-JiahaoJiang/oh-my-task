@@ -24,6 +24,8 @@ page = r'''<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Oh My Task final design and implementation plan">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="favicon.svg">
   <title>Oh My Task — Design Review</title>
   <style>
     :root {
