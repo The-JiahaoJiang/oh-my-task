@@ -23,6 +23,10 @@ required = [
     "ignoredPaths",
     "project-links.json",
     "generate a completion document",
+    "Too many agent tabs. Which task is this one?",
+    "task: build-deploy-v2",
+    "task name in the bottom status area",
+    'href="#terminal-tabs"',
     'href="OH-MY-TASK.html"',
 ]
 for value in required:

@@ -79,6 +79,17 @@ page = r'''<!doctype html>
     .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); opacity: .55; }
     .terminal pre { min-height: 310px; margin: 0; padding: 24px; white-space: pre-wrap; color: #c9d4eb; font: .83rem/1.75 "SFMono-Regular",Consolas,monospace; }
     .prompt { color: var(--cyan); } .cmd { color: #d9d2ff; } .success { color: #85e7b0; }
+    .tab-demo { overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--code); box-shadow: var(--shadow); }
+    .tab-strip { display: flex; gap: 2px; padding: 10px 10px 0; border-bottom: 1px solid var(--line); background: color-mix(in srgb,var(--card-solid) 72%,var(--code)); }
+    .term-tab { max-width: 31%; padding: 9px 13px; overflow: hidden; border: 1px solid transparent; border-radius: 9px 9px 0 0; color: var(--muted); font: .75rem/1.2 "SFMono-Regular",Consolas,monospace; text-overflow: ellipsis; white-space: nowrap; }
+    .term-tab.active { color: var(--text); border-color: var(--line); border-bottom-color: var(--code); background: var(--code); }
+    .term-screen { min-height: 290px; padding: 24px; color: #c9d4eb; font: .84rem/1.75 "SFMono-Regular",Consolas,monospace; }
+    .term-screen .dim { color: #74819a; }
+    .task-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 9px 15px; border-top: 1px solid rgba(72,223,207,.3); color: #d8fff9; background: rgba(21,93,87,.42); font: .76rem/1.35 "SFMono-Regular",Consolas,monospace; }
+    .task-footer strong { color: #72eadc; }
+    .scenario-points { display: grid; gap: 13px; margin-top: 24px; }
+    .scenario-point { display: grid; grid-template-columns: 27px 1fr; gap: 10px; color: var(--muted); }
+    .scenario-point b { color: var(--cyan); }
     section { max-width: var(--max); margin: auto; padding: 82px 22px; }
     .section-head { max-width: 720px; margin-bottom: 35px; }
     .section-head h2 { margin: 8px 0 12px; font-size: clamp(2.1rem,5vw,3.7rem); line-height: 1.02; letter-spacing: -.05em; }
@@ -112,7 +123,7 @@ page = r'''<!doctype html>
 <body>
   <nav class="nav"><div class="nav-inner">
     <a class="brand" href="#top"><span class="logo">✓</span><span>Oh My Task</span></a>
-    <div class="nav-links"><a href="#why">Why</a><a href="#use">Use it</a><a href="#extension">Extension</a><a href="#config">Config</a></div>
+    <div class="nav-links"><a href="#terminal-tabs">Terminal tabs</a><a href="#why">Why</a><a href="#use">Use it</a><a href="#extension">Extension</a><a href="#config">Config</a></div>
     <a class="button" href="https://github.com/The-JiahaoJiang/oh-my-task">GitHub ↗</a>
     <button id="theme" aria-label="Toggle theme">☼</button>
   </div></nav>
@@ -142,6 +153,32 @@ Revision 8 · 3 files · 1 decision
 <span class="prompt">›</span> <span class="cmd">/skill:oh-my-task generate a completion doc</span></pre>
       </div>
     </div></header>
+
+    <section id="terminal-tabs" class="reveal">
+      <div class="split" style="align-items:center">
+        <div>
+          <div class="eyebrow">A familiar terminal problem</div>
+          <div class="section-head" style="margin-bottom:0"><h2>Too many agent tabs. Which task is this one?</h2><p>When several Pi or coding-agent sessions are open, terminal tabs often look identical. You waste time opening each tab, scrolling through messages, and reconstructing what it was doing.</p></div>
+          <div class="scenario-points">
+            <div class="scenario-point"><b>01</b><span>Oh My Task associates the session with its durable task.</span></div>
+            <div class="scenario-point"><b>02</b><span>The Pi extension shows the active <strong>task name in the bottom status area</strong> of that agent window.</span></div>
+            <div class="scenario-point"><b>03</b><span>Switch tabs and identify the work immediately—without reading the conversation.</span></div>
+          </div>
+        </div>
+        <figure style="margin:0" aria-label="Terminal illustration showing multiple agent tabs and an active task name in the bottom status area">
+          <div class="tab-demo">
+            <div class="tab-strip">
+              <div class="term-tab">pi — api</div>
+              <div class="term-tab active">pi — deploy</div>
+              <div class="term-tab">pi — tests</div>
+            </div>
+            <div class="term-screen"><span class="dim">workspace</span>  CopilotEGP<br><span class="dim">model</span>      claude-sonnet<br><br><span class="prompt">›</span> Verify rollback behavior for deployment v2<br><br><span class="success">✓</span> Read deployment configuration<br><span class="success">✓</span> Checked rollback handler<br><span class="prompt">●</span> Updating integration tests…</div>
+            <div class="task-footer"><span><strong>task: build-deploy-v2</strong></span><span>in-progress · revision 8</span></div>
+          </div>
+          <figcaption style="margin-top:10px;color:var(--muted);font-size:.78rem;text-align:center">The active task stays visible at the bottom of the Pi window.</figcaption>
+        </figure>
+      </div>
+    </section>
 
     <section id="why" class="reveal">
       <div class="section-head"><div class="eyebrow">One durable source of truth</div><h2>Task continuity without transcript lock-in.</h2><p>Sessions remain useful references, but task documents hold the context required to continue across Pi, Claude Code, Codex CLI, Kimi CLI, OpenCode, and compatible agents.</p></div>
