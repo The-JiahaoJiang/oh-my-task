@@ -39,14 +39,19 @@ page = r'''<!doctype html>
       --text: #edf2ff; --muted: #9ca9c3; --line: rgba(158,177,215,.16);
       --purple: #9b87ff; --cyan: #48dfcf; --pink: #f28ad2; --yellow: #ffd479;
       --glow: rgba(129,103,255,.24); --shadow: 0 25px 80px rgba(0,0,0,.34);
-      --code: #090e19; --max: 1180px;
+      --code: #090e19; --terminal-text: #cbd7ed; --terminal-muted: #7f8da8;
+      --terminal-command: #ded8ff; --terminal-success: #85e7b0;
+      --terminal-footer-bg: rgba(21,93,87,.42); --terminal-footer-text: #d8fff9; --terminal-footer-accent: #72eadc;
+      --max: 1180px;
     }
     html[data-theme="light"] {
       color-scheme: light;
       --bg: #f6f7fc; --bg-2: #edf1fa; --card: rgba(255,255,255,.82); --card-solid: #fff;
       --text: #162036; --muted: #62708b; --line: rgba(38,53,83,.14);
-      --purple: #6755e7; --cyan: #007f75; --pink: #b93687; --yellow: #875700;
+      --purple: #6755e7; --cyan: #006f67; --pink: #b93687; --yellow: #875700;
       --glow: rgba(103,85,231,.13); --shadow: 0 25px 70px rgba(52,65,94,.14); --code: #edf1f8;
+      --terminal-text: #23314f; --terminal-muted: #56647e; --terminal-command: #4f3bc4; --terminal-success: #08704c;
+      --terminal-footer-bg: #d4f0ec; --terminal-footer-text: #213d3a; --terminal-footer-accent: #006b61;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; scroll-padding-top: 84px; }
@@ -77,16 +82,16 @@ page = r'''<!doctype html>
     .terminal { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: color-mix(in srgb,var(--code) 91%,transparent); box-shadow: var(--shadow); transform: rotate(1deg); }
     .terminal-bar { display: flex; align-items: center; gap: 7px; padding: 13px 16px; border-bottom: 1px solid var(--line); }
     .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); opacity: .55; }
-    .terminal pre { min-height: 310px; margin: 0; padding: 24px; white-space: pre-wrap; color: #c9d4eb; font: .83rem/1.75 "SFMono-Regular",Consolas,monospace; }
-    .prompt { color: var(--cyan); } .cmd { color: #d9d2ff; } .success { color: #85e7b0; }
+    .terminal pre { min-height: 310px; margin: 0; padding: 24px; white-space: pre-wrap; color: var(--terminal-text); font: .83rem/1.75 "SFMono-Regular",Consolas,monospace; }
+    .prompt { color: var(--cyan); } .cmd { color: var(--terminal-command); } .success { color: var(--terminal-success); }
     .tab-demo { overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--code); box-shadow: var(--shadow); }
     .tab-strip { display: flex; gap: 2px; padding: 10px 10px 0; border-bottom: 1px solid var(--line); background: color-mix(in srgb,var(--card-solid) 72%,var(--code)); }
     .term-tab { max-width: 31%; padding: 9px 13px; overflow: hidden; border: 1px solid transparent; border-radius: 9px 9px 0 0; color: var(--muted); font: .75rem/1.2 "SFMono-Regular",Consolas,monospace; text-overflow: ellipsis; white-space: nowrap; }
     .term-tab.active { color: var(--text); border-color: var(--line); border-bottom-color: var(--code); background: var(--code); }
-    .term-screen { min-height: 290px; padding: 24px; color: #c9d4eb; font: .84rem/1.75 "SFMono-Regular",Consolas,monospace; }
-    .term-screen .dim { color: #74819a; }
-    .task-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 9px 15px; border-top: 1px solid rgba(72,223,207,.3); color: #d8fff9; background: rgba(21,93,87,.42); font: .76rem/1.35 "SFMono-Regular",Consolas,monospace; }
-    .task-footer strong { color: #72eadc; }
+    .term-screen { min-height: 290px; padding: 24px; color: var(--terminal-text); font: .84rem/1.75 "SFMono-Regular",Consolas,monospace; }
+    .term-screen .dim { color: var(--terminal-muted); }
+    .task-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 9px 15px; border-top: 1px solid color-mix(in srgb,var(--terminal-footer-accent) 45%,transparent); color: var(--terminal-footer-text); background: var(--terminal-footer-bg); font: .76rem/1.35 "SFMono-Regular",Consolas,monospace; }
+    .task-footer strong { color: var(--terminal-footer-accent); }
     .scenario-points { display: grid; gap: 13px; margin-top: 24px; }
     .scenario-point { display: grid; grid-template-columns: 27px 1fr; gap: 10px; color: var(--muted); }
     .scenario-point b { color: var(--cyan); }

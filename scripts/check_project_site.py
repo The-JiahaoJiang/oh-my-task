@@ -26,6 +26,8 @@ required = [
     "Too many agent tabs. Which task is this one?",
     "task: build-deploy-v2",
     "task name in the bottom status area",
+    "--terminal-text: #23314f",
+    "--terminal-footer-bg: #d4f0ec",
     'href="#terminal-tabs"',
     'href="OH-MY-TASK.html"',
 ]
